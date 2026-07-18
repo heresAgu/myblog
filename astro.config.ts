@@ -1,4 +1,4 @@
-import { copyFile } from 'node:fs/promises'
+﻿import { copyFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import type { AstroIntegration } from 'astro'
@@ -69,7 +69,7 @@ const bilingualReadingTime = (): AstroIntegration => ({
 // https://astro.build/config
 export default defineConfig({
   // Top-Level Options
-  site: 'https://www.joyehuang.me',
+  site: 'https://heresagu-blog.vercel.app',
   // base: '/docs',
   trailingSlash: 'never',
 
@@ -191,3 +191,4 @@ export default defineConfig({
     }
   }
 })
+
