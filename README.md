@@ -181,3 +181,5 @@ Notes 的 `status` 可选：
 代码基于 Apache 2.0 协议开源。
 
 文章、图片、PPT、二维码和个人内容不属于模板授权范围。fork 后请替换为你自己的内容。
+
+Deployed on Vercel 🚀
