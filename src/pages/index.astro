@@ -15,7 +15,7 @@ import SiteStats from '@/components/home/SiteStats.astro'
 import SkillLayout from '@/components/home/SkillLayout.astro'
 import LegacyIntroOverlay from '@/components/intro/LegacyIntroOverlay.astro'
 import JoJo from '@/components/mascot/JoJo'
-import Terminal from '@/components/terminal/Terminal.astro'
+
 import config from '@/site-config'
 
 export const prerender = true
@@ -105,14 +105,12 @@ const latestTalk = talks[0]
       id='content'
       class='animate relative z-0 flex w-full min-w-0 max-w-full flex-col gap-y-10 md:w-4/5 lg:w-5/6'
     >
-      <div class='-mt-2'>
-        <Terminal />
-      </div>
+      
 
       <Section title='About'>
         <p class='text-muted-foreground'>Computer Science Student · AI Learner</p>
         <p class='text-muted-foreground'>
-          这里是 heresAgu 的个人博客，主要记录计算机科学与人工智能方向的学习过程。
+          这里是 Agu 的个人博客，主要记录计算机科学与人工智能方向的学习过程。
           目前正在学习数据结构、CSAPP、数字电路，以及 Transformer、PyTorch 等 AI 相关内容。
           希望把学习过程中理解的知识、踩过的坑和一些项目实践记录下来。
         </p>
