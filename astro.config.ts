@@ -76,7 +76,7 @@ export default defineConfig({
   // Adapter
   // https://docs.astro.build/en/guides/deploy/
   // 1. Vercel (serverless)
-adapter: vercel({ runtime: 'nodejs22.x' }),
+adapter: vercel(),
   output: 'server',
   // 2. Vercel (static)
   // adapter: vercelStatic(),

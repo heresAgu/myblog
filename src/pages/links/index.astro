@@ -9,8 +9,8 @@ import FriendList from '@/components/links/FriendList.astro'
 import FriendConstellation from '@/components/links/FriendConstellation.astro'
 
 const headings = [
-  { depth: 2, slug: 'friend-links', text: 'Friend Links' },
-  { depth: 2, slug: 'apply-links', text: 'Apply Links' }
+  { depth: 2, slug: 'friend-links', text: '友链' },
+  { depth: 2, slug: 'apply-links', text: '申请友链' }
 ]
 
 const { friends } = links
@@ -20,26 +20,30 @@ const allApplyText = linksConf.applyTip.map(({ name, val }) => `${name}: ${val}`
 const copyAllScript = `navigator.clipboard.writeText(${JSON.stringify(allApplyText)});document.dispatchEvent(new CustomEvent('toast',{detail:{message:'已复制全部信息到剪贴板'}}))`
 ---
 
-<PageLayout title='Links' {headings} info='/links'>
-  <h2 id='friend-links'>Friend Links</h2>
-  <p>朋友是天上的星，你在中央——每条线是一段连接。把鼠标移到星上看 ta 是谁。</p>
+<PageLayout title='友链' {headings} info='/links'>
+  <h2 id='friend-links'>友链</h2>
+  <p>朋友是天上的星，你在中央——每条线是一段连接。把鼠标移到星上看看它是谁。</p>
+
   <FriendConstellation list={friends[0]} />
-  <Collapse title='Links with Bad Status'>
+
+  <Collapse title='状态异常的友链'>
     <FriendList list={friends[1]} />
   </Collapse>
-  <Collapse title='Link History Book'>
+
+  <Collapse title='友链记录'>
     <Timeline events={linksConf.logbook} />
   </Collapse>
 
   {/*
-  <h2 id='special-links'>Special Links</h2>
+  <h2 id='special-links'>特别链接</h2>
   <FriendList list={friends[2]} />
   */}
 
   <!-- apply-links -->
-  <h2 id='apply-links'>Apply Links</h2>
+  <h2 id='apply-links'>申请友链</h2>
+
   <p>
-    本站信息如下 The site information（点击单行复制，或
+    本站信息如下（点击单行复制，或
     <button
       type='button'
       class='cursor-pointer underline underline-offset-4'
@@ -48,10 +52,11 @@ const copyAllScript = `navigator.clipboard.writeText(${JSON.stringify(allApplyTe
       一键复制全部
     </button>）：
   </p>
+
   <blockquote class='not-prose grid grid-cols-[auto_1fr] gap-x-2 break-words border-s-4 ps-4'>
     {
       linksConf.applyTip.map(({ name, val }) => {
-        const script = `navigator.clipboard.writeText('${val}');document.dispatchEvent(new CustomEvent('toast',{detail:{message:'Copied "${val}" to clipboard!'}}))`
+        const script = `navigator.clipboard.writeText('${val}');document.dispatchEvent(new CustomEvent('toast',{detail:{message:'已复制 "${val}" 到剪贴板'}}))`
         return (
           <>
             <span class='text-end'>{name}:</span>
@@ -67,10 +72,12 @@ const copyAllScript = `navigator.clipboard.writeText(${JSON.stringify(allApplyTe
   <p>
     申请时请按上面的字段，<strong>直接发在下方评论区</strong>。评论区也是一个小小的社交场所，大家可以彼此串门、加个好友。几点小说明：
   </p>
+
   <ul>
     <li>在你的友链上添加了本站；</li>
-    <li>请确保你的站点活着；</li>
+    <li>请确保你的站点正常运行；</li>
     <li>博客内容不违反国家法律。</li>
   </ul>
+
   <Comment slot='bottom' />
 </PageLayout>

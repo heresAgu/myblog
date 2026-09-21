@@ -7,7 +7,7 @@ export const theme: ThemeUserConfig = {
   /** Will be used in index page & copyright declaration */
   author: 'heresAgu',
   /** Description metadata for your website. Can be used in page metadata. */
-  description: 'Personal blog by heresAgu',
+  description: '记录计算机科学、人工智能与技术学习的个人博客',
   /** The default favicon for your site which should be a path to an image in the `public/` directory. */
   favicon: '/favicon/favicon.ico',
   /** Specify the default language for this site. */
@@ -49,9 +49,7 @@ export const theme: ThemeUserConfig = {
     menu: [
       { title: 'Blog', link: '/blog' },
       { title: 'Notes', link: '/notes' },
-      { title: 'Talks', link: '/talks' },
       { title: 'Projects', link: '/projects' },
-      { title: 'Links', link: '/links' },
       { title: 'About', link: '/about' },
       { title: 'Contact', link: '/contact' }
     ]

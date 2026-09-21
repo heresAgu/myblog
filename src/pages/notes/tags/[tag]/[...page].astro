@@ -38,10 +38,10 @@ const { page } = Astro.props as unknown as Props
 const { tag } = Astro.params
 
 const statusLabels: Record<string, string> = {
-  'in-progress': '🚧 In Progress',
-  incomplete: '⏸️ Needs more',
-  ready: '✅ Ready',
-  archived: '📦 Archived'
+  'in-progress': '🚧 进行中',
+  incomplete: '⏸️ 待补充',
+  ready: '✅ 已整理',
+  archived: '📦 已归档'
 }
 
 const statusColors: Record<string, string> = {
@@ -52,20 +52,20 @@ const statusColors: Record<string, string> = {
 }
 
 const meta = {
-  title: `Note Tag: ${tag}`,
-  description: `Note entries tagged with ${tag}`
+  title: `笔记标签：${tag}`,
+  description: `查看带有「${tag}」标签的笔记`
 }
 
 const paginationProps = {
   ...(page.url.prev && {
     prevUrl: {
-      text: '← Previous Entries',
+      text: '← 上一页',
       url: page.url.prev
     }
   }),
   ...(page.url.next && {
     nextUrl: {
-      text: 'Next Entries →',
+      text: '下一页 →',
       url: page.url.next
     }
   })
@@ -73,7 +73,7 @@ const paginationProps = {
 ---
 
 <PageLayout {meta}>
-  <Button title='Back' href='/notes' style='back' />
+  <Button title='返回笔记' href='/notes' style='back' />
 
   <main class='mt-6 lg:mt-10'>
     <div id='content-header' class='animate'>
@@ -81,13 +81,13 @@ const paginationProps = {
         <Icon name='tag-2' class='text-muted-foreground' />
         <h1 class='text-3xl font-medium'>{tag}</h1>
       </div>
+
       <p class='mb-6 text-muted-foreground'>
-        {page.total}
-        {page.total === 1 ? 'entry' : 'entries'} with this tag
+        共 {page.total} 条笔记带有此标签
       </p>
     </div>
 
-    <section id='content' class='animate' aria-label='Note entries'>
+    <section id='content' class='animate' aria-label='笔记列表'>
       <ul class='space-y-3'>
         {
           page.data.map((entry) => (
@@ -102,11 +102,13 @@ const paginationProps = {
                     {entry.data.type === 'research' && '🔬'}
                     {entry.data.type === 'reference' && '📚'}
                   </div>
+
                   <div class='min-w-0 flex-1'>
                     <div class='mb-1 flex items-start justify-between gap-4'>
                       <h3 class='font-medium leading-tight group-hover:text-foreground'>
                         {entry.data.title}
                       </h3>
+
                       <span
                         class={`shrink-0 text-xs ${statusColors[entry.data.status]}`}
                         title={statusLabels[entry.data.status]}
@@ -117,9 +119,11 @@ const paginationProps = {
                         {entry.data.status === 'archived' && '📦'}
                       </span>
                     </div>
+
                     {entry.data.description && (
                       <p class='mb-2 text-sm text-muted-foreground'>{entry.data.description}</p>
                     )}
+
                     <div class='flex flex-wrap items-center gap-2 text-xs text-muted-foreground'>
                       <time datetime={entry.data.date.toISOString()}>
                         {entry.data.date.toLocaleDateString('zh-CN', {
@@ -128,15 +132,18 @@ const paginationProps = {
                           day: 'numeric'
                         })}
                       </time>
+
                       {entry.data.updatedDate && (
                         <span>
-                          · Updated{' '}
+                          · 更新于{' '}
                           {entry.data.updatedDate.toLocaleDateString('zh-CN', {
+                            year: 'numeric',
                             month: 'short',
                             day: 'numeric'
                           })}
                         </span>
                       )}
+
                       {entry.data.tags.length > 1 && (
                         <>
                           <span>·</span>

@@ -8,13 +8,14 @@ const allPosts = await getBlogCollection()
 const allTags = getUniqueTagsWithCount(allPosts)
 
 const meta = {
-  description: "A list of all the topics I've written about in my posts",
+  description: '查看博客文章涉及的所有主题和标签。',
   title: 'All Tags'
 }
 ---
 
 <PageLayout {meta}>
-  <Button title='Back' href='/blog' style='back' />
+  <Button title='返回博客' href='/blog' style='back' />
+
   <main class='mt-6 lg:mt-10'>
     <div id='content-header' class='animate'>
       <h1 class='mb-6 text-3xl font-medium'>Tags</h1>
@@ -41,7 +42,7 @@ const meta = {
             ))}
           </ul>
         ) : (
-          <p>Any tag yet.</p>
+          <p>还没有标签。</p>
         )
       }
     </div>
