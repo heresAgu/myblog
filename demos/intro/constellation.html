@@ -109,21 +109,21 @@
   <canvas id="c"></canvas>
   <div class="context" id="context"></div>
   <div class="tag" id="tag">agent runtime · tool loop · content merge</div>
-  <button class="enter" id="enter">进入 ~/joye →</button>
+  <button class="enter" id="enter">进入 ~/young →</button>
   <div class="trace" id="trace">agent loop complete · context merged</div>
 
   <div class="hero" id="hero">
     <div class="card">
-      <img class="avatar" src="../../src/assets/avatar.png" alt="Joye"
+      <img class="avatar" src="../../src/assets/avatar.png" alt="Young"
            onerror="this.removeAttribute('src')" />
-      <h1 class="name">Joye</h1>
+      <h1 class="name">Young</h1>
       <div class="meta"><span>📍 Melbourne, Australia</span><span>· GitHub</span></div>
       <div class="ital">“Stay hungry, stay foolish.”</div>
       <a class="pill" href="javascript:void 0"><span class="ping"><i></i><i></i></span> Connect Me!</a>
     </div>
   </div>
 
-  <div class="hint">这是入场动画演示 · 成形后可互动，点击进入 ~/joye</div>
+  <div class="hint">这是入场动画演示 · 成形后可互动，点击进入 ~/young</div>
   <div class="ctl"><button id="skip">跳过 →</button><button id="replay">重播 ↻</button></div>
 
 <script>
@@ -143,11 +143,11 @@ const TOOLS=[
   { call:'mcp.github()', shards:['OpenHarness','ship log'], pos:[78,29] },
   { call:'memory.search()', shards:['design taste','frontend'], pos:[22,56] },
   { call:'examples.unitize()', shards:['tool call','UI case'], pos:[78,56] },
-  { call:'merge_context()', shards:['identity','JOYE'], pos:[50,82] }
+  { call:'merge_context()', shards:['identity','YOUNG'], pos:[50,82] }
 ];
 const task=document.createElement('div');
 task.className='task';
-task.textContent='task: compose joye.dev/home';
+task.textContent='task: compose young.dev/home';
 context.appendChild(task);
 TOOLS.forEach((item,i)=>{
   const tool=document.createElement('div');
@@ -179,7 +179,7 @@ TOOLS.forEach((item,i)=>{
 });
 const merge=document.createElement('div');
 merge.className='merge';
-merge.textContent='merge: context shards → JOYE';
+merge.textContent='merge: context shards → YOUNG';
 context.appendChild(merge);
 
 function vw(){ return innerWidth || document.documentElement.clientWidth || 1280; }
@@ -194,7 +194,7 @@ addEventListener('resize', ()=>{ resize(); buildTargets(); });
 addEventListener('mousemove', e=>{ mouse.x=e.clientX*DPR; mouse.y=e.clientY*DPR; });
 addEventListener('mouseleave', ()=>{ mouse.x=mouse.y=-1e9; });
 
-// sample the word "JOYE" into target points (manual letter-spacing for legibility)
+// sample the word "YOUNG" into target points (manual letter-spacing for legibility)
 function sampleText(text){
   if(!W || !H) return [];
   const off = document.createElement('canvas');
@@ -232,7 +232,7 @@ function sampleText(text){
 }
 
 function buildTargets(){
-  const pts = sampleText('JOYE');
+  const pts = sampleText('YOUNG');
   // grow/shrink the particle pool to match
   while(particles.length < pts.length){
     particles.push({
@@ -390,7 +390,7 @@ function start(){
   raf=requestAnimationFrame(frame);
 }
 function boot(){
-  // sample text only once the real font is ready, so "JOYE" has the right shape
+  // sample text only once the real font is ready, so "YOUNG" has the right shape
   if(document.fonts && document.fonts.ready){
     Promise.race([document.fonts.ready, new Promise(r=>setTimeout(r,800))]).then(start);
   } else start();

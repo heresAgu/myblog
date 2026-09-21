@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Intro · joye.init()</title>
+<title>Intro · young.init()</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
@@ -120,7 +120,7 @@
     <div class="term" id="term">
       <div class="chrome">
         <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
-        <span class="ttl">joye@dev — ~/site — zsh</span>
+        <span class="ttl">young@dev — ~/site — zsh</span>
       </div>
       <div class="body" id="out"></div>
     </div>
@@ -128,9 +128,9 @@
 
   <div class="hero" id="hero">
     <div class="card">
-      <img class="avatar" src="../../src/assets/avatar.png" alt="Joye"
+      <img class="avatar" src="../../src/assets/avatar.png" alt="Young"
            onerror="this.style.background='conic-gradient(from 210deg,var(--steel),var(--cyan),var(--steel))';this.removeAttribute('src')" />
-      <h1 class="name">Joye</h1>
+      <h1 class="name">Young</h1>
       <div class="meta"><span>📍 Melbourne, Australia</span><span>· GitHub</span></div>
       <div class="tag">“Stay hungry, stay foolish.”</div>
       <a class="pill" href="javascript:void 0"><span class="ping"><i></i><i></i></span> Connect Me!</a>
@@ -183,9 +183,9 @@ async function progress(label){
 async function run(){
   out.innerHTML=''; term.classList.remove('gone'); hero.classList.remove('show');
   await sleep(300);
-  await caretLine('$', './joye --init');
+  await caretLine('$', './young --init');
   await sleep(120);
-  await progress('booting joye.dev');
+  await progress('booting young.dev');
   await progress('loading design-system');
   line(`<span class="ok">[ ok ]</span> mounting personality module: <span style="color:var(--cyan)">JoJo</span> 🤖`);
   await sleep(160);
@@ -194,7 +194,7 @@ async function run(){
   await caretLine('$', 'whoami');
   const art = line('', 'art'); art.textContent = ART;
   await sleep(120);
-  line(`<span class="dim">Joye · Full-Stack & AI Agent Developer · Melbourne 🇦🇺</span>`);
+  line(`<span class="dim">Young · Full-Stack & AI Agent Developer · Melbourne 🇦🇺</span>`);
   await sleep(520);
   await caretLine('$', 'open ~/');
   await sleep(360);

@@ -14,7 +14,7 @@ type SearchApiResult = {
 
 const MOCK_AGENT_REPLIES: Record<string, string[]> = {
   default: [
-    'Hey, this is Joye (well, a tiny mock of him).',
+    'Hey, this is Young (well, a tiny mock of him).',
     'Real agent endpoint is wiring up — for now I just rehearse lines.',
     'Try `chat what are you building?` or `chat hire you?` for canned answers.'
   ],
@@ -24,7 +24,7 @@ const MOCK_AGENT_REPLIES: Record<string, string[]> = {
   ],
   hire: [
     'Open to chats — frontend / full-stack / AI-product roles.',
-    'Best path: `mail` (huangdeshiou@gmail.com) or `connect` for socials.'
+    'Best path: `mail` (choudeshiou@gmail.com) or `connect` for socials.'
   ],
   stack: [
     'Astro 5 · React 19 · UnoCSS · TypeScript · deployed on Vercel.',
@@ -95,14 +95,14 @@ export const commands: CommandRegistry = {
 
   whoami: {
     name: 'whoami',
-    summary: 'about Joye',
+    summary: 'about Young',
     run: ({ push }) => {
       push([
         {
           kind: 'node',
           node: (
             <span>
-              <span className='wt-tone-primary'>Joye</span>
+              <span className='wt-tone-primary'>Young</span>
               <span className='wt-tone-muted'> · Frontend developer based in Melbourne</span>
             </span>
           )
@@ -376,7 +376,7 @@ export const commands: CommandRegistry = {
     summary: 'fetch the agent-facing site map (well-known JSON)',
     usage: 'manifest [--url]',
     run: async ({ args, push }) => {
-      const url = '/.well-known/joye-manifest.json'
+      const url = '/.well-known/young-manifest.json'
       // `manifest --url` just prints the public URL (handy for sharing)
       if (args[0] === '--url' || args[0] === '-u') {
         push([
@@ -491,14 +491,14 @@ export const commands: CommandRegistry = {
     name: 'mail',
     summary: 'send me an email',
     run: ({ push }) => {
-      const href = 'mailto:huangdeshiou@gmail.com?subject=hi%20joye'
+      const href = 'mailto:choudeshiou@gmail.com?subject=hi%20young'
       push([
         { kind: 'text', tone: 'muted', text: 'opening your mail client…' },
         {
           kind: 'node',
           node: (
             <a className='wt-link' href={href}>
-              huangdeshiou@gmail.com
+              choudeshiou@gmail.com
             </a>
           )
         }

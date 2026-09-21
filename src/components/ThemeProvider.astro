@@ -48,7 +48,7 @@
 
     applyTheme()
 
-    if (!window.__joyeThemeChangeListenerBound) {
+    if (!window.__youngThemeChangeListenerBound) {
       const mediaQuery = window.matchMedia(MEDIA_QUERY)
       const handleThemeChange = () => {
         const storedTheme = getStoredTheme()
@@ -61,21 +61,21 @@
         mediaQuery.addEventListener('change', handleThemeChange)
       }
 
-      window.__joyeThemeChangeListenerBound = true
+      window.__youngThemeChangeListenerBound = true
     }
 
-    if (!window.__joyeThemePageLoadListenerBound) {
+    if (!window.__youngThemePageLoadListenerBound) {
       document.addEventListener('astro:page-load', () => {
         applyTheme()
       })
-      window.__joyeThemePageLoadListenerBound = true
+      window.__youngThemePageLoadListenerBound = true
     }
 
-    if (!window.__joyeToastListenerBound) {
+    if (!window.__youngToastListenerBound) {
       document.addEventListener('toast', (event) => {
         mountToast(event.detail?.message)
       })
-      window.__joyeToastListenerBound = true
+      window.__youngToastListenerBound = true
     }
   })()
 </script>

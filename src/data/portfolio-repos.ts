@@ -1,7 +1,7 @@
 export type PortfolioLocale = 'zh' | 'en'
 type PortfolioRepoId =
-  | 'joyehuang/Learn-Open-Harness'
-  | 'joyehuang/minimind-notes'
+  | 'youngchou/Learn-Open-Harness'
+  | 'youngchou/minimind-notes'
   | 'Javis603/token-monitor'
 
 type SharedRepo = {
@@ -21,14 +21,14 @@ type LocalizedRepoCopy = {
 const repositories: SharedRepo[] = [
   {
     name: 'Learn-Open-Harness',
-    fullName: 'joyehuang/Learn-Open-Harness',
-    href: 'https://github.com/joyehuang/Learn-Open-Harness',
+    fullName: 'youngchou/Learn-Open-Harness',
+    href: 'https://github.com/youngchou/Learn-Open-Harness',
     fallbackStars: 297
   },
   {
     name: 'minimind-notes',
-    fullName: 'joyehuang/minimind-notes',
-    href: 'https://github.com/joyehuang/minimind-notes',
+    fullName: 'youngchou/minimind-notes',
+    href: 'https://github.com/youngchou/minimind-notes',
     fallbackStars: 93
   },
   {
@@ -42,11 +42,11 @@ const repositories: SharedRepo[] = [
 
 const localizedCopy: Record<PortfolioLocale, Record<PortfolioRepoId, LocalizedRepoCopy>> = {
   zh: {
-    'joyehuang/Learn-Open-Harness': {
+    'youngchou/Learn-Open-Harness': {
       eyebrow: '独立项目 · Agent Harness',
       description: '从零构建 Agent Harness：循环、工具、记忆与多智能体协作。'
     },
-    'joyehuang/minimind-notes': {
+    'youngchou/minimind-notes': {
       eyebrow: '独立项目 · LLM from scratch',
       description: '从 Transformer 到 SFT，用实验把小语言模型重新造一遍。'
     },
@@ -57,12 +57,12 @@ const localizedCopy: Record<PortfolioLocale, Record<PortfolioRepoId, LocalizedRe
     }
   },
   en: {
-    'joyehuang/Learn-Open-Harness': {
+    'youngchou/Learn-Open-Harness': {
       eyebrow: 'Original project · Agent Harness',
       description:
         'Build an agent harness from first principles: loops, tools, memory, and multi-agent work.'
     },
-    'joyehuang/minimind-notes': {
+    'youngchou/minimind-notes': {
       eyebrow: 'Original project · LLM from scratch',
       description:
         'Rebuild a small language model from Transformer through SFT, one experiment at a time.'

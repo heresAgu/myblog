@@ -64,7 +64,7 @@ export function buildManifest({ blog, blogEn, notes, notesEn, curated, talks }: 
         type: 'link',
         name: 'manifest',
         description: 'agent-facing site map (well-known JSON)',
-        href: '/.well-known/joye-manifest.json'
+        href: '/.well-known/young-manifest.json'
       }
     ]
   }
@@ -93,7 +93,7 @@ function buildPostDir(p: FsCollectionEntry, hrefRoot: string): DirNode {
   const lang = p.data.language ?? inferLang(p)
   const href = hrefFor(p, hrefRoot)
   const endpoint = `/api/knowledge/content/${p.kind}/${encodeURI(p.id)}`
-  const canonicalUrl = `https://joyehuang.me${href}`
+  const canonicalUrl = `https://youngchou.me${href}`
   const metaContent = formatMeta({
     title: p.data.title,
     date,

@@ -77,7 +77,7 @@ input, comment text, search text, or free-form user input.
 | `target`           | Specific interacted object.                            | `profile`, `repo`, `wechat`, `pill`                                        |
 | `action`           | Interaction action.                                    | `click`, `reveal`, `close`, `minimize`, `external_link`                    |
 | `method`           | Interaction method.                                    | `shell_click`, `keyboard_backtick`, `hover`, `focus`                       |
-| `href`             | Destination for anchors.                               | `https://github.com/joyehuang`                                             |
+| `href`             | Destination for anchors.                               | `https://github.com/youngchou`                                             |
 | `destination_type` | Normalized destination kind.                           | `internal`, `external`, `github`, `mailto`, `doc`, `video`                 |
 | `command`          | Terminal command name only.                            | `help`, `open`, `mail`, `connect`                                          |
 | `command_result`   | Safe terminal outcome bucket.                          | `success`, `unknown_command`, `navigation`, `external_open`, `mailto_open` |

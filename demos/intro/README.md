@@ -5,8 +5,8 @@
 ## 文件说明
 
 - `index.html`: 四个主要方案的对比画廊。
-- `constellation.html`: 动画一，粒子聚合成 `JOYE`。
-- `terminal-boot.html`: 动画二，终端启动 `joye.init()`。
+- `constellation.html`: 动画一，粒子聚合成 `YOUNG`。
+- `terminal-boot.html`: 动画二，终端启动 `young.init()`。
 - `kinetic-type.html`: 动画三，动态排版。
 - `multi-agent.html`: 动画四，Multi-Agent 编排。
 - `agent-story.html` / `agent-diffusion.html` / `constellation-emit.html`: 后续扩展实验，暂时只作为素材池保留。
@@ -29,8 +29,8 @@
 
 - URL：`?intro=focus`、`?intro=line`、`?intro=jojo`，忽略已看门控并强制播放。
 - 选择器：首页底部的“选择入场”。
-- 事件：`window.dispatchEvent(new CustomEvent('joye:intro', { detail: { variant: 'focus' } }))`。
-- API：`window.__joyeIntro.play('focus')`。
+- 事件：`window.dispatchEvent(new CustomEvent('young:intro', { detail: { variant: 'focus' } }))`。
+- API：`window.__youngIntro.play('focus')`。
 - 辅助：`?intro=picker` 直接打开选择器，`?intro=off` 禁用本次入场。
 
 ## 预览方式

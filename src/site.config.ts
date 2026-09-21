@@ -65,7 +65,7 @@ export const theme: ThemeUserConfig = {
     /** Optional details about the social media accounts for this site. */
     social: {
       github: 'https://github.com/heresAgu'
-      // linkedin: 'https://www.linkedin.com/in/joyehuang/'
+      // linkedin: 'https://www.linkedin.com/in/youngchou/'
     }
   },
 

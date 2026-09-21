@@ -78,7 +78,7 @@ function Prompt({ user, host, cwd }: { user: string; host: string; cwd: string }
 
 export default function DevMode({
   fs,
-  user = 'joye',
+  user = 'young',
   host = ROOT_LABEL,
   onExit
 }: Props) {
@@ -185,7 +185,7 @@ export default function DevMode({
   // boot sequence: roughly "loading" steps, streamed in
   useEffect(() => {
     const steps: Omit<BootLine, 'ok'>[] = [
-      { t: 0, text: 'booting joye-shell v0.1 …' },
+      { t: 0, text: 'booting young-shell v0.1 …' },
       { t: 180, text: 'loading /etc/personality.conf' },
       { t: 420, text: `mounting /blog (${blogCount} entries)` },
       { t: 710, text: 'spinning up agent mock on localhost:∞' },

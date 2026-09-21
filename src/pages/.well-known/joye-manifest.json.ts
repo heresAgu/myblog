@@ -11,12 +11,12 @@ import { buildSiteFs } from '@/components/terminal/fs/server'
  * the dev-mode terminal renders is exposed here, plus a description
  * and a small dictionary of follow-up endpoints.
  *
- * Companion skill: see github.com/joyehuang/skills/explore-site (TODO).
+ * Companion skill: see github.com/youngchou/skills/explore-site (TODO).
  */
 
-const SITE_URL = 'https://joyehuang.me'
+const SITE_URL = 'https://youngchou.me'
 
-const INSTRUCTIONS = `You're reading a structured map of Joye Huang's personal site.
+const INSTRUCTIONS = `You're reading a structured map of Young Chou's personal site.
 
 Quick start:
   - Read the "instructions" field (this) and "description" field for context.
@@ -32,7 +32,7 @@ Suggested first reads: /about, /now, /README. Then ls /blog, /notes,
 /curated and /talks for knowledge entries.
 
 If you're a human exploring this URL: there's a richer interactive
-version at https://joyehuang.me — press \` (backtick) to open dev mode.`
+version at https://youngchou.me — press \` (backtick) to open dev mode.`
 
 export const GET: APIRoute = async () => {
   const tree = await buildSiteFs()
@@ -42,7 +42,7 @@ export const GET: APIRoute = async () => {
     name: ROOT_LABEL,
     site: SITE_URL,
     description:
-      'Joye Huang — frontend / full-stack dev based in Melbourne. ' +
+      'Young Chou — frontend / full-stack dev based in Melbourne. ' +
       'Currently AIGC full-stack intern @ Tezign, building agent-first ' +
       'web UIs and writing teardowns of agent harnesses (Claude Code, ' +
       'OpenHarness). The site is a pseudo-FS — posts, notes, curated reads, ' +
@@ -70,7 +70,7 @@ export const GET: APIRoute = async () => {
         note: 'Legacy endpoint kept for the terminal viewer; prefer content_entry for indexing.'
       },
       well_known_manifest: {
-        url: `${SITE_URL}/.well-known/joye-manifest.json`,
+        url: `${SITE_URL}/.well-known/young-manifest.json`,
         method: 'GET',
         format: 'json',
         note: 'this document'
@@ -84,7 +84,7 @@ export const GET: APIRoute = async () => {
     },
     links: {
       site: SITE_URL,
-      github: 'https://github.com/joyehuang',
+      github: 'https://github.com/youngchou',
       rss: `${SITE_URL}/rss.xml`,
       sitemap: `${SITE_URL}/sitemap-index.xml`
     },

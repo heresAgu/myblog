@@ -64,8 +64,8 @@
 
   <div class="hero" id="hero">
     <div class="card">
-      <img class="avatar" src="../../src/assets/avatar.png" alt="Joye" onerror="this.removeAttribute('src')" />
-      <h1 class="name">Joye</h1>
+      <img class="avatar" src="../../src/assets/avatar.png" alt="Young" onerror="this.removeAttribute('src')" />
+      <h1 class="name">Young</h1>
       <div class="meta"><span>📍 Melbourne, Australia</span><span>· GitHub</span></div>
       <div class="ital">“Stay hungry, stay foolish.”</div>
       <a class="pill" href="javascript:void 0"><span class="ping"><i></i><i></i></span> Connect Me!</a>
@@ -82,7 +82,7 @@ const cap = document.getElementById('cap');
 const hero = document.getElementById('hero');
 const reduce = matchMedia('(prefers-reduced-motion:reduce)').matches;
 let W,H,DPR, raf, t0=0;
-let nodes=[], edges=[], messages=[], schedule=[], schedPtr=0, parts=[], joyePts=[], converged=false, heroShown=false;
+let nodes=[], edges=[], messages=[], schedule=[], schedPtr=0, parts=[], youngPts=[], converged=false, heroShown=false;
 
 const ROLES = ['planner','router','search','code','memory','judge','tool','writer'];
 
@@ -128,7 +128,7 @@ function buildSchedule(){
   schedule.sort((p,q)=>p.t-q.t);
 }
 
-function sampleJOYE(){
+function sampleYOUNG(){
   if(!W||!H) return [];
   const off=document.createElement('canvas'); off.width=W; off.height=H;
   const o=off.getContext('2d');
@@ -136,10 +136,10 @@ function sampleJOYE(){
   const tracking=0.18; let size=Math.min(H*0.4, W*0.34);
   const setFont=()=>o.font=`700 ${size}px Inter, system-ui, sans-serif`;
   setFont();
-  const adv=()=>{ let w=0; for(const ch of 'JOYE') w+=o.measureText(ch).width+size*tracking; return w-size*tracking; };
+  const adv=()=>{ let w=0; for(const ch of 'YOUNG') w+=o.measureText(ch).width+size*tracking; return w-size*tracking; };
   if(adv()>W*0.74){ size*=W*0.74/adv(); setFont(); }
   let x=(W-adv())/2; const y=H*0.45;
-  for(const ch of 'JOYE'){ o.fillText(ch,x,y); x+=o.measureText(ch).width+size*tracking; }
+  for(const ch of 'YOUNG'){ o.fillText(ch,x,y); x+=o.measureText(ch).width+size*tracking; }
   const d=o.getImageData(0,0,W,H).data; const gap=Math.max(5,Math.round(7*DPR)); const pts=[];
   for(let yy=0;yy<H;yy+=gap) for(let xx=0;xx<W;xx+=gap) if(d[(yy*W+xx)*4+3]>128) pts.push({x:xx,y:yy});
   return pts;
@@ -156,11 +156,11 @@ function nodeColor(n, a){
 
 function converge(){
   converged=true;
-  joyePts=sampleJOYE();
+  youngPts=sampleYOUNG();
   parts=[];
-  for(let i=0;i<joyePts.length;i++){
+  for(let i=0;i<youngPts.length;i++){
     const src=nodes[(Math.random()*nodes.length)|0];
-    parts.push({ x:src.x, y:src.y, tx:joyePts[i].x, ty:joyePts[i].y,
+    parts.push({ x:src.x, y:src.y, tx:youngPts[i].x, ty:youngPts[i].y,
       r:(Math.random()*0.9+0.7)*DPR, k:0, hue:Math.random() });
   }
   cap.classList.remove('show');
@@ -225,7 +225,7 @@ function frame(ts){
       ctx.fillText(n.label, n.x, n.y+rr+11*DPR);
     }
   } else {
-    // convergence: nodes fade, particles assemble JOYE
+    // convergence: nodes fade, particles assemble YOUNG
     const since=(ts-t0)/1000-2.6;
     const nodeA=Math.max(0,1-since*1.6);
     if(nodeA>0.02){
