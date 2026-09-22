@@ -2,7 +2,7 @@
 import { getLangFromUrl, hasEnAlternate, localizedPath, useTranslations, type Lang } from '@/i18n/ui'
 
 import { Icon } from 'astro-pure/user'
-
+import ThemeColorPicker from '@/components/ThemeColorPicker.astro'
 import config from '@/site-config'
 
 interface Props {
@@ -76,6 +76,8 @@ const searchHref = localizedPath('/search', lang)
 
     {/* buttons */}
     <div class='z-30 flex gap-x-4 group-[.not-top]:gap-x-2' style='transition:gap 0.3s'>
+      <ThemeColorPicker />
+
 
       <button
         id='toggleDevMode'

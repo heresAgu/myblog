@@ -13,7 +13,7 @@ import LinkCard from '@/components/home/LinkCard.astro'
 import Section from '@/components/home/Section.astro'
 import SiteStats from '@/components/home/SiteStats.astro'
 import SkillLayout from '@/components/home/SkillLayout.astro'
-import LegacyIntroOverlay from '@/components/intro/LegacyIntroOverlay.astro'
+
 import JoJo from '@/components/mascot/JoJo'
 
 import config from '@/site-config'
@@ -49,8 +49,7 @@ const talks = sortTalks(
 const latestTalk = talks[0]
 ---
 
-<PageLayout meta={{ title: 'Home' }} highlightColor='#659EB9'>
-  <LegacyIntroOverlay />
+<PageLayout meta={{ title: 'Home' }} highlightColor='hsl(var(--primary))'>
   <main class='flex w-full flex-col items-center'>
     <section
       class='animate mb-10 flex flex-col items-center gap-y-7 relative z-50'
