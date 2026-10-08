@@ -50,6 +50,8 @@ const notesSchema = z.object({
   tags: z.array(z.string()).default([]).transform(removeDupsAndLowerCase),
   // Type of note entry: note, snippet, draft, idea, research, etc.
   type: z.enum(['note', 'snippet', 'draft', 'idea', 'research', 'reference']).default('note'),
+  // Optional reading order within a note series.
+  order: z.number().int().positive().optional(),
   // Status: in-progress, incomplete/needs-more, ready, archived
   status: z.enum(['in-progress', 'incomplete', 'ready', 'archived']).default('in-progress'),
   draft: z.boolean().default(false),

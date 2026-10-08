@@ -1,0 +1,72 @@
+---
+import type { CollectionEntry } from 'astro:content'
+
+interface Props {
+  entries: CollectionEntry<'notes'>[]
+  currentId: string
+  title: string
+  overviewHref?: string
+}
+
+const { entries, currentId, title, overviewHref } = Astro.props
+const currentIndex = entries.findIndex((entry) => entry.id === currentId)
+const groups: { title: string; entries: CollectionEntry<'notes'>[] }[] = []
+
+for (const entry of entries) {
+  const groupTitle = entry.data.tags[1] ?? '其他'
+  const group = groups.find((item) => item.title === groupTitle)
+  if (group) group.entries.push(entry)
+  else groups.push({ title: groupTitle, entries: [entry] })
+}
+---
+
+<nav aria-label={`${title} 系列目录`}>
+  <div class='mb-5'>
+    <h2 class='text-base font-semibold'>{title} 阅读目录</h2>
+    <p class='mt-1 text-xs text-muted-foreground'>第 {currentIndex + 1} / {entries.length} 篇</p>
+    {
+      overviewHref && (
+        <a
+          href={overviewHref}
+          class='mt-2 inline-block text-xs text-muted-foreground hover:text-foreground'
+        >
+          查看专题总览 →
+        </a>
+      )
+    }
+  </div>
+
+  {
+    groups.map((group) => (
+      <section class='mb-5'>
+        <h3 class='mb-2 px-2 text-xs font-medium text-muted-foreground'>{group.title}</h3>
+        <ol class='space-y-1'>
+          {group.entries.map((entry) => (
+            <li>
+              <a
+                href={`/notes/${entry.id}`}
+                aria-current={entry.id === currentId ? 'page' : undefined}
+                class='series-link flex gap-2 rounded-md px-2 py-2 text-sm leading-5 text-muted-foreground transition hover:bg-muted hover:text-foreground'
+                data-astro-prefetch
+              >
+                <span class='shrink-0 tabular-nums'>
+                  {String(entry.data.order ?? entries.indexOf(entry) + 1).padStart(2, '0')}
+                </span>
+                <span class='line-clamp-2'>{entry.data.title}</span>
+              </a>
+            </li>
+          ))}
+        </ol>
+      </section>
+    ))
+  }
+</nav>
+
+<style>
+  .series-link[aria-current='page'] {
+    background: hsl(var(--muted));
+    color: hsl(var(--foreground));
+    font-weight: 600;
+    box-shadow: inset 2px 0 hsl(var(--primary));
+  }
+</style>

@@ -21,12 +21,14 @@ interface Props {
   meta: SiteMeta & { noindex?: boolean }
   highlightColor?: string
   chrome?: boolean
+  wide?: boolean
 }
 
 const {
   meta: { articleDate, description = config.description, noindex, ogImage, title },
   highlightColor,
   chrome = true,
+  wide = false,
   ...props
 } = Astro.props
 
@@ -50,7 +52,13 @@ const htmlLang = lang === 'en' ? 'en' : config.locale.lang
         />
       )
     }
-    <div class:list={['w-full', chrome && 'max-w-[70rem] px-4 sm:px-7 lg:px-10']}>
+    <div
+      class:list={[
+        'w-full',
+        chrome && 'px-4 sm:px-7 lg:px-10',
+        chrome && (wide ? 'max-w-[90rem]' : 'max-w-[70rem]')
+      ]}
+    >
       {chrome && <Header lang={lang} />}
       <slot />
       {chrome && <Footer />}

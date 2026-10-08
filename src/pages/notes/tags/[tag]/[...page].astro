@@ -21,7 +21,12 @@ export const getStaticPaths: GetStaticPaths = async ({ paginate }) => {
   return uniqueTags.flatMap((tag) => {
     const filteredEntries = allNotes
       .filter((entry) => entry.data.tags.includes(tag))
-      .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+      .sort(
+        (a, b) =>
+          b.data.date.getTime() - a.data.date.getTime() ||
+          (a.data.order ?? Infinity) - (b.data.order ?? Infinity) ||
+          a.id.localeCompare(b.id)
+      )
 
     return paginate(filteredEntries, {
       params: { tag },

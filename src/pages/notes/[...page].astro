@@ -19,7 +19,12 @@ export const getStaticPaths: GetStaticPaths = async ({ paginate }) => {
   const allNotes = await getCollection('notes')
   const sortedNotes = allNotes
     .filter((entry) => !entry.data.draft)
-    .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+    .sort(
+      (a, b) =>
+        b.data.date.getTime() - a.data.date.getTime() ||
+        (a.data.order ?? Infinity) - (b.data.order ?? Infinity) ||
+        a.id.localeCompare(b.id)
+    )
 
   return paginate(sortedNotes, {
     pageSize: 20
@@ -33,6 +38,7 @@ interface Props {
 const { page } = Astro.props as unknown as Props
 
 const allNotes = (await getCollection('notes')).filter((entry) => !entry.data.draft)
+const csappNotes = allNotes.filter((entry) => entry.data.tags.includes('csapp'))
 const uniqueTags = [...new Set(allNotes.flatMap((entry) => entry.data.tags))].sort()
 const uniqueStatuses = [...new Set(allNotes.map((entry) => entry.data.status))].sort()
 
@@ -128,6 +134,27 @@ const typeColors: Record<string, string> = {
     </div>
 
     {
+      page.currentPage === 1 && csappNotes.length > 0 && (
+        <section class='animate mt-8' aria-label='笔记专题'>
+          <h2 class='mb-3 text-lg font-medium'>按专题阅读</h2>
+          <a
+            href='/notes/csapp'
+            class='group block rounded-xl border border-border bg-card px-5 py-5 transition hover:border-foreground/20 hover:shadow-sm'
+            data-astro-prefetch
+          >
+            <div class='flex items-center justify-between gap-4'>
+              <div>
+                <h3 class='text-lg font-medium'>CSAPP · 深入理解计算机系统</h3>
+                <p class='mt-1 text-sm text-muted-foreground'>按章节与阅读顺序整理的学习笔记</p>
+              </div>
+              <span class='shrink-0 text-sm text-muted-foreground'>{csappNotes.length} 篇 →</span>
+            </div>
+          </a>
+        </section>
+      )
+    }
+
+    {
       page.data.length === 0 ? (
         <p class='mt-8'>还没有笔记。</p>
       ) : (
@@ -206,10 +233,7 @@ const typeColors: Record<string, string> = {
                           <span>·</span>
 
                           <span>
-                            <span
-                              class='waline-pageview-readonly'
-                              data-path={`/notes/${entry.id}`}
-                            >
+                            <span class='waline-pageview-readonly' data-path={`/notes/${entry.id}`}>
                               0
                             </span>{' '}
                             次浏览
@@ -244,10 +268,7 @@ const typeColors: Record<string, string> = {
                     标签
                   </h2>
 
-                  <a
-                    href='/notes/tags'
-                    class='text-xs text-muted-foreground hover:text-foreground'
-                  >
+                  <a href='/notes/tags' class='text-xs text-muted-foreground hover:text-foreground'>
                     查看全部 →
                   </a>
                 </div>
@@ -283,9 +304,7 @@ const typeColors: Record<string, string> = {
                       <span class='text-foreground'>{statusLabels[status] || status}</span>
                     </span>
 
-                    <span class='text-xs text-muted-foreground'>
-                      {statusCounts[status] || 0}
-                    </span>
+                    <span class='text-xs text-muted-foreground'>{statusCounts[status] || 0}</span>
                   </li>
                 ))}
               </ul>

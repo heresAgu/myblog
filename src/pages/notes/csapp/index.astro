@@ -1,0 +1,85 @@
+---
+import { getCollection } from 'astro:content'
+
+import { Button } from 'astro-pure/user'
+import PageLayout from '@/layouts/BaseLayout.astro'
+
+export const prerender = true
+
+const notes = (await getCollection('notes'))
+  .filter((entry) => !entry.data.draft && entry.data.tags.includes('csapp'))
+  .sort((a, b) => (a.data.order ?? Infinity) - (b.data.order ?? Infinity))
+
+const chapters = [
+  {
+    title: '第 2 章 · 信息的表示和处理',
+    description: '从位与字节出发，理解整数和浮点数怎样存储、解释与运算。',
+    tag: '信息的表示'
+  },
+  {
+    title: '第 3 章 · 程序的机器级表示',
+    description: '沿着 C 代码到汇编的路径，理解指令、控制流、函数调用与数组。',
+    tag: '机器级程序'
+  }
+]
+
+const meta = {
+  title: 'CSAPP 学习笔记',
+  description: '按章节与阅读顺序整理的《深入理解计算机系统》学习笔记。'
+}
+---
+
+<PageLayout {meta}>
+  <Button title='返回笔记' href='/notes' style='back' />
+
+  <main class='mt-6 lg:mt-10'>
+    <header class='animate'>
+      <p class='mb-2 text-sm text-muted-foreground'>Notes / CSAPP</p>
+      <h1 class='text-3xl font-medium'>CSAPP 学习笔记</h1>
+      <p class='mt-3 max-w-3xl text-muted-foreground'>
+        按章节和知识点整理的阅读路线。目前共有 {notes.length} 篇笔记，可以按顺序阅读，也可以直接跳到需要复习的主题。
+      </p>
+    </header>
+
+    {
+      chapters.map((chapter) => {
+        const entries = notes.filter((entry) => entry.data.tags.includes(chapter.tag))
+        return (
+          entries.length > 0 && (
+            <section class='animate mt-10' aria-label={chapter.title}>
+              <div class='mb-4'>
+                <h2 class='text-xl font-medium'>{chapter.title}</h2>
+                <p class='mt-1 text-sm text-muted-foreground'>{chapter.description}</p>
+              </div>
+              <ol class='space-y-3'>
+                {entries.map((entry) => (
+                  <li>
+                    <a
+                      href={`/notes/${entry.id}`}
+                      class='group flex gap-4 rounded-xl border border-border bg-card px-5 py-4 transition hover:border-foreground/20 hover:shadow-sm'
+                      data-astro-prefetch
+                    >
+                      <span class='w-6 shrink-0 text-sm tabular-nums text-muted-foreground'>
+                        {String(entry.data.order ?? '').padStart(2, '0')}
+                      </span>
+                      <span class='min-w-0'>
+                        <span class='block font-medium group-hover:text-foreground'>
+                          {entry.data.title}
+                        </span>
+                        {entry.data.description && (
+                          <span class='mt-1 block text-sm text-muted-foreground'>
+                            {entry.data.description}
+                          </span>
+                        )}
+                      </span>
+                    </a>
+                  </li>
+                ))}
+              </ol>
+            </section>
+          )
+        )
+      })
+    }
+  </main>
+</PageLayout>

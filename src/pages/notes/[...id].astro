@@ -2,9 +2,11 @@
 import { getCollection, render, type CollectionEntry } from 'astro:content'
 
 import { Button, Icon } from 'astro-pure/user'
-import PageLayout from '@/layouts/ContentLayout.astro'
+import PageLayout from '@/layouts/NoteLayout.astro'
 import PageInfo from '@/components/comment/PageInfo.astro'
 import JsonLd from '@/components/JsonLd.astro'
+import TableOfContents from '@/components/navigation/TableOfContents.astro'
+import NoteSeriesNav from '@/components/notes/NoteSeriesNav.astro'
 
 export const prerender = true
 
@@ -21,7 +23,8 @@ type Props = {
 }
 
 const { entry } = Astro.props
-const { Content } = await render(entry)
+const { Content, headings } = await render(entry)
+const outlineHeadings = headings.filter((heading) => heading.depth === 2 || heading.depth === 3)
 
 const {
   title,
@@ -36,6 +39,23 @@ const {
   source
 } = entry.data
 
+const allNotes = await getCollection('notes')
+const seriesSlug = entry.id.includes('/') ? entry.id.split('/')[0] : null
+const seriesEntries = seriesSlug
+  ? allNotes
+      .filter((note) => !note.data.draft && note.id.startsWith(`${seriesSlug}/`))
+      .sort(
+        (a, b) =>
+          (a.data.order ?? Infinity) - (b.data.order ?? Infinity) || a.id.localeCompare(b.id)
+      )
+  : []
+const seriesIndex = seriesEntries.findIndex((note) => note.id === entry.id)
+const hasSeries = seriesIndex >= 0 && seriesEntries.length > 1
+const previousNote = seriesEntries[seriesIndex - 1]
+const nextNote = seriesEntries[seriesIndex + 1]
+const seriesTitle = seriesSlug === 'csapp' ? 'CSAPP' : (seriesSlug?.toUpperCase() ?? '')
+const seriesOverviewHref = seriesSlug === 'csapp' ? '/notes/csapp' : undefined
+
 let relatedBlogPosts: CollectionEntry<'blog'>[] = []
 if (relatedBlog && relatedBlog.length > 0) {
   const allBlogPosts = await getCollection('blog')
@@ -44,9 +64,12 @@ if (relatedBlog && relatedBlog.length > 0) {
 
 let relatedNoteEntries: CollectionEntry<'notes'>[] = []
 if (relatedNote && relatedNote.length > 0) {
-  const allNotes = await getCollection('notes')
   relatedNoteEntries = allNotes.filter(
-    (note) => relatedNote.includes(note.id) && note.id !== entry.id
+    (note) =>
+      relatedNote.includes(note.id) &&
+      note.id !== entry.id &&
+      note.id !== previousNote?.id &&
+      note.id !== nextNote?.id
   )
 }
 
@@ -100,8 +123,26 @@ const breadcrumbLd = {
 }
 ---
 
-<PageLayout {meta} back='/notes'>
+<PageLayout {meta} back={seriesOverviewHref ?? '/notes'} {hasSeries}>
   <JsonLd schema={[noteLd, breadcrumbLd]} />
+
+  {
+    hasSeries && (
+      <NoteSeriesNav
+        slot='series'
+        entries={seriesEntries}
+        currentId={entry.id}
+        title={seriesTitle}
+        overviewHref={seriesOverviewHref}
+      />
+    )
+  }
+
+  {
+    outlineHeadings.length > 0 && (
+      <TableOfContents slot='outline' headings={outlineHeadings} title='本文目录' />
+    )
+  }
 
   <div slot='header' class='animate gap-y-4'>
     <div class='mb-2 flex flex-wrap items-center gap-2 text-sm text-muted-foreground'>
@@ -182,6 +223,35 @@ const breadcrumbLd = {
 
   <div slot='bottom' class='animate mt-8 border-t border-border pt-6'>
     {
+      hasSeries && (previousNote || nextNote) && (
+        <nav class='mb-8 grid gap-3 sm:grid-cols-2' aria-label='系列阅读顺序'>
+          {previousNote ? (
+            <a
+              href={`/notes/${previousNote.id}`}
+              class='rounded-lg border border-border bg-card p-4 transition hover:border-foreground/20'
+              data-astro-prefetch
+            >
+              <span class='block text-xs text-muted-foreground'>← 上一篇</span>
+              <span class='mt-1 block font-medium text-foreground'>{previousNote.data.title}</span>
+            </a>
+          ) : (
+            <span />
+          )}
+          {nextNote && (
+            <a
+              href={`/notes/${nextNote.id}`}
+              class='rounded-lg border border-border bg-card p-4 text-right transition hover:border-foreground/20'
+              data-astro-prefetch
+            >
+              <span class='block text-xs text-muted-foreground'>下一篇 →</span>
+              <span class='mt-1 block font-medium text-foreground'>{nextNote.data.title}</span>
+            </a>
+          )}
+        </nav>
+      )
+    }
+
+    {
       (relatedBlogPosts.length > 0 || relatedNoteEntries.length > 0) && (
         <>
           <h2 class='mb-4 text-xl font-semibold'>相关内容</h2>
@@ -255,7 +325,7 @@ const breadcrumbLd = {
         <p class='text-xs'>内容可能尚未完整，仍在持续整理中。</p>
       </div>
 
-      <Button title='← 返回' href='/notes' style='back' />
+      <Button title='← 返回' href={seriesOverviewHref ?? '/notes'} style='back' />
     </div>
   </div>
 </PageLayout>

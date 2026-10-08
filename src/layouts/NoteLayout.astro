@@ -1,0 +1,305 @@
+---
+import 'katex/dist/katex.min.css'
+
+import type { SiteMeta } from 'astro-pure/types'
+import { Button } from 'astro-pure/user'
+import { cn } from 'astro-pure/utils'
+import PageLayout from '@/layouts/BaseLayout.astro'
+import BackToTop from '@/components/navigation/BackToTop.astro'
+import { integ } from '@/site-config'
+
+interface Props {
+  meta: SiteMeta
+  back?: string
+  hasSeries?: boolean
+}
+
+const { meta, back = '/notes', hasSeries = false } = Astro.props
+const hasOutline = Astro.slots.has('outline')
+---
+
+<PageLayout {meta} wide>
+  <main
+    class:list={[
+      'note-grid mt-6 lg:mt-10',
+      !hasSeries && 'note-grid-no-series',
+      !hasOutline && 'note-grid-no-outline'
+    ]}
+  >
+    {
+      hasSeries && (
+        <aside id='series-sidebar' class='note-sidebar note-series' aria-label='系列目录'>
+          <button class='note-close' type='button' data-note-close aria-label='关闭系列目录'>
+            ×
+          </button>
+          <slot name='series' />
+        </aside>
+      )
+    }
+
+    <article class='note-main min-w-0'>
+      <div class='mb-7 flex flex-wrap items-center gap-3'>
+        <Button title='返回笔记' href={back} style='back' />
+        <nav class='note-nav-controls' aria-label='笔记目录'>
+          {
+            hasSeries && (
+              <button
+                type='button'
+                data-note-panel='series'
+                aria-controls='series-sidebar'
+                aria-expanded='false'
+              >
+                系列目录
+              </button>
+            )
+          }
+          {
+            hasOutline && (
+              <button
+                type='button'
+                data-note-panel='outline'
+                aria-controls='sidebar'
+                aria-expanded='false'
+              >
+                本文目录
+              </button>
+            )
+          }
+        </nav>
+      </div>
+
+      <header id='content-header' class='animate'>
+        <slot name='header' />
+      </header>
+
+      <div id='content' class={cn('animate mt-8 min-w-0 overflow-x-auto', integ.typography.class)}>
+        <slot />
+      </div>
+
+      <div class='note-bottom animate mt-8 text-muted-foreground'>
+        <slot name='bottom' />
+      </div>
+    </article>
+
+    {
+      hasOutline && (
+        <aside id='sidebar' class='note-sidebar note-outline' aria-label='本文目录'>
+          <button class='note-close' type='button' data-note-close aria-label='关闭本文目录'>
+            ×
+          </button>
+          <slot name='outline' />
+        </aside>
+      )
+    }
+  </main>
+
+  <button
+    id='note-nav-backdrop'
+    class='note-nav-backdrop'
+    type='button'
+    aria-label='关闭目录'
+    hidden></button>
+
+  <BackToTop header='content-header' content='content' />
+</PageLayout>
+
+<script>
+  const panels: Record<string, HTMLElement | null> = {
+    series: document.getElementById('series-sidebar'),
+    outline: document.getElementById('sidebar')
+  }
+  const controls = document.querySelectorAll<HTMLButtonElement>('[data-note-panel]')
+  const backdrop = document.getElementById('note-nav-backdrop') as HTMLButtonElement | null
+  let activePanel: string | null = null
+  let previousOverflow = ''
+
+  function closePanel() {
+    if (!activePanel) return
+    panels[activePanel]?.classList.remove('is-open')
+    controls.forEach((control) => control.setAttribute('aria-expanded', 'false'))
+    if (backdrop) backdrop.hidden = true
+    document.body.style.overflow = previousOverflow
+    activePanel = null
+  }
+
+  function openPanel(name: string) {
+    const panel = panels[name]
+    if (!panel) return
+    closePanel()
+    previousOverflow = document.body.style.overflow
+    activePanel = name
+    panel.classList.add('is-open')
+    controls.forEach((control) =>
+      control.setAttribute('aria-expanded', String(control.dataset.notePanel === name))
+    )
+    if (backdrop) backdrop.hidden = false
+    document.body.style.overflow = 'hidden'
+  }
+
+  controls.forEach((control) => {
+    control.addEventListener('click', () => {
+      const name = control.dataset.notePanel
+      if (!name) return
+      if (activePanel === name) closePanel()
+      else openPanel(name)
+    })
+  })
+
+  Object.values(panels).forEach((panel) => {
+    panel?.querySelector('[data-note-close]')?.addEventListener('click', closePanel)
+    panel?.addEventListener('click', (event) => {
+      if ((event.target as HTMLElement).closest('a')) closePanel()
+    })
+  })
+  backdrop?.addEventListener('click', closePanel)
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') closePanel()
+  })
+  window.addEventListener('resize', () => {
+    if (
+      (activePanel === 'series' && window.innerWidth >= 1500) ||
+      (activePanel === 'outline' && window.innerWidth >= 1100)
+    ) {
+      closePanel()
+    }
+  })
+</script>
+
+<style>
+  .note-grid {
+    display: grid;
+    grid-template-columns: 14rem minmax(0, 52rem) 14rem;
+    align-items: start;
+    justify-content: center;
+    gap: 2rem;
+  }
+
+  .note-grid-no-series {
+    grid-template-columns: minmax(0, 52rem) 14rem;
+  }
+
+  .note-grid-no-outline {
+    grid-template-columns: 14rem minmax(0, 52rem);
+  }
+
+  .note-grid-no-series.note-grid-no-outline {
+    grid-template-columns: minmax(0, 52rem);
+  }
+
+  .note-sidebar {
+    position: sticky;
+    top: 6rem;
+    max-height: calc(100vh - 7rem);
+    min-width: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+  }
+
+  .note-close,
+  .note-nav-controls {
+    display: none;
+  }
+
+  .note-nav-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 70;
+    background: rgb(0 0 0 / 45%);
+  }
+
+  .note-nav-backdrop[hidden] {
+    display: none;
+  }
+
+  #content :global(h2[id]),
+  #content :global(h3[id]) {
+    scroll-margin-top: 5rem;
+  }
+
+  @media (max-width: 1499px) {
+    .note-grid,
+    .note-grid-no-series {
+      grid-template-columns: minmax(0, 52rem) 14rem;
+    }
+
+    .note-grid-no-outline,
+    .note-grid-no-series.note-grid-no-outline {
+      grid-template-columns: minmax(0, 52rem);
+    }
+
+    .note-series {
+      display: none;
+    }
+
+    .note-nav-controls {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .note-nav-controls button {
+      border: 1px solid hsl(var(--border));
+      border-radius: 999px;
+      background: hsl(var(--background));
+      padding: 0.6rem 0.9rem;
+      color: hsl(var(--foreground));
+      font-size: 0.875rem;
+    }
+
+    .note-nav-controls [data-note-panel='outline'] {
+      display: none;
+    }
+
+    .note-sidebar.is-open {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      z-index: 80;
+      display: block;
+      width: min(22rem, calc(100vw - 2.5rem));
+      max-height: none;
+      overflow-y: auto;
+      background: hsl(var(--background));
+      padding: 1.5rem;
+      box-shadow: 0 12px 40px rgb(0 0 0 / 20%);
+    }
+
+    .note-series.is-open {
+      left: 0;
+      border-right: 1px solid hsl(var(--border));
+    }
+
+    .note-sidebar.is-open .note-close {
+      display: block;
+      float: right;
+      margin: -0.5rem -0.5rem 0.5rem 0.5rem;
+      padding: 0.25rem 0.5rem;
+      font-size: 1.5rem;
+      line-height: 1;
+    }
+  }
+
+  @media (max-width: 1099px) {
+    .note-grid,
+    .note-grid-no-series,
+    .note-grid-no-outline,
+    .note-grid-no-series.note-grid-no-outline {
+      display: block;
+      max-width: 52rem;
+      margin-inline: auto;
+    }
+
+    .note-outline {
+      display: none;
+    }
+
+    .note-outline.is-open {
+      right: 0;
+      border-left: 1px solid hsl(var(--border));
+    }
+
+    .note-nav-controls [data-note-panel='outline'] {
+      display: block;
+    }
+  }
+</style>
