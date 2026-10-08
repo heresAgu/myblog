@@ -12,8 +12,6 @@ import type { FsNode } from './fs/types'
  * current page. Entry points:
  *   - `\`` anywhere (except inside editable controls)
  *   - `young:toggle-dev` / `young:enter-dev` / `young:exit-dev` custom events
- *     (dispatched by the Header toggle button — keeps the Astro side
- *     decoupled from React).
  *
  * The pseudo-FS is fetched on demand when dev mode is entered, rather than
  * shipped as a server-rendered prop — this component mounts on every page,
