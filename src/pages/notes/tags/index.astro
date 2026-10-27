@@ -1,80 +1,43 @@
 ---
-/**
- * Note Tags Index
- * Shows all tags used in the notes with entry counts
- */
 import { getCollection } from 'astro:content'
 
-import { Button, Icon } from 'astro-pure/user'
 import PageLayout from '@/layouts/BaseLayout.astro'
 
 export const prerender = true
-
-const allNotes = (await getCollection('notes')).filter((entry) => !entry.data.draft)
-
-// Count entries per tag
-const tagCounts = allNotes.reduce(
-  (acc, entry) => {
-    entry.data.tags.forEach((tag) => {
-      acc[tag] = (acc[tag] || 0) + 1
-    })
-    return acc
-  },
-  {} as Record<string, number>
+const notes = (await getCollection('notes')).filter((entry) => !entry.data.draft)
+const counts = new Map<string, number>()
+notes.forEach((entry) =>
+  entry.data.tags.forEach((tag) => counts.set(tag, (counts.get(tag) ?? 0) + 1))
 )
-
-// Sort tags by count (descending), then alphabetically
-const sortedTags = Object.entries(tagCounts).sort(([tagA, countA], [tagB, countB]) => {
-  if (countB !== countA) return countB - countA
-  return tagA.localeCompare(tagB)
-})
-
-const meta = {
-  title: '笔记标签',
-  description: '按标签浏览笔记'
-}
+const tags = [...counts].sort(([a, ac], [b, bc]) => bc - ac || a.localeCompare(b))
 ---
 
-<PageLayout {meta}>
-  <Button title='返回笔记' href='/notes' style='back' />
-
-  <main class='mt-6 lg:mt-10'>
-    <div id='content-header' class='animate'>
-      <h1 class='mb-2 flex items-center gap-2 text-3xl font-medium'>
-        <Icon name='tag-2' />
-        笔记标签
-      </h1>
-
-      <p class='mb-6 text-muted-foreground'>
-        共 {sortedTags.length} 个标签，包含 {allNotes.length} 条笔记
-      </p>
-    </div>
-
-    <section id='content' class='animate'>
-      <div class='grid gap-3 sm:grid-cols-2 lg:grid-cols-3'>
-        {
-          sortedTags.map(([tag, count]) => (
-            <a
-              href={`/notes/tags/${tag}`}
-              class='group rounded-lg border border-border bg-card p-4 transition hover:border-foreground/20 hover:shadow-sm'
-              data-astro-prefetch
-            >
-              <div class='flex items-center justify-between'>
-                <span class='font-medium group-hover:text-foreground'>{tag}</span>
-                <span class='rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground'>
-                  {count}
-                </span>
-              </div>
-            </a>
-          ))
-        }
-      </div>
-
+<PageLayout meta={{ title: '笔记主题索引', description: '沿着主题，寻找学习笔记。' }}>
+  <main class='index-page'>
+    <header class='page-masthead' id='content-header'>
+      <p class='eyebrow'><a href='/notes'>笔记</a> / SUBJECT INDEX</p>
+      <h1>主题索引<em>Find a thread.</em></h1>
+      <p>{tags.length} 个主题，{notes.length} 篇笔记。挑一个感兴趣的词，继续读下去。</p>
+    </header>
+    <ul class='entry-list'>
       {
-        sortedTags.length === 0 && (
-          <p class='text-muted-foreground'>还没有笔记标签。</p>
-        )
+        tags.map(([tag, count], index) => (
+          <li class='entry-row entry-row--compact'>
+            <a href={`/notes/tags/${tag}`}>
+              <span class='entry-row__index'>{String(index + 1).padStart(2, '0')}</span>
+              <div class='entry-row__body'>
+                <>
+                  <h3>{tag}</h3>
+                  <p>{count} 篇笔记</p>
+                </>
+              </div>
+              <span class='entry-row__arrow' aria-hidden='true'>
+                ↗
+              </span>
+            </a>
+          </li>
+        ))
       }
-    </section>
+    </ul>
   </main>
 </PageLayout>

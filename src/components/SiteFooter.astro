@@ -1,0 +1,17 @@
+---
+import { getLangFromUrl, localizedPath } from '@/i18n/ui'
+
+const lang = getLangFromUrl(Astro.url)
+---
+
+<footer class='site-footer'>
+  <div>
+    <a href={localizedPath('/', lang)} class='site-footer__signature'>heresAgu</a>
+    <span>© {new Date().getFullYear()} heresAgu</span>
+  </div>
+  <nav aria-label={lang === 'en' ? 'Footer links' : '页脚链接'}>
+    <a href='https://github.com/heresAgu' target='_blank' rel='noopener noreferrer'>GitHub ↗</a>
+    <a href={localizedPath('/contact', lang)}>{lang === 'en' ? 'Contact' : '联系'}</a>
+    <a href={localizedPath('/rss.xml', lang)}>RSS</a>
+  </nav>
+</footer>

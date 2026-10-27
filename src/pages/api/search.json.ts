@@ -4,7 +4,7 @@ import { getCollection } from 'astro:content'
 export const prerender = false
 
 type SearchDoc = {
-  collection: 'blog' | 'notes'
+  collection: 'blog' | 'notes' | 'daily'
   title: string
   description?: string
   url: string
@@ -54,9 +54,10 @@ function clampLimit(limit: number) {
 async function buildSearchDocs(lang: 'zh' | 'en'): Promise<SearchDoc[]> {
   // en 集合的路由用 translationKey（.en 文件名 slug 化后不是合法路由）
   if (lang === 'en') {
-    const [blogPosts, notesEntries] = await Promise.all([
+    const [blogPosts, notesEntries, dailyDocs] = await Promise.all([
       getCollection('blogEn', ({ data }) => !data.draft && Boolean(data.translationKey)),
-      getCollection('notesEn', ({ data }) => !data.draft && Boolean(data.translationKey))
+      getCollection('notesEn', ({ data }) => !data.draft && Boolean(data.translationKey)),
+      buildDailySearchDocs()
     ])
 
     const blogDocs = blogPosts.map<SearchDoc>((entry) => ({
@@ -79,12 +80,13 @@ async function buildSearchDocs(lang: 'zh' | 'en'): Promise<SearchDoc[]> {
       body: normalizeBody((entry as { body?: string }).body ?? '')
     }))
 
-    return [...blogDocs, ...noteDocs]
+    return [...blogDocs, ...noteDocs, ...dailyDocs]
   }
 
-  const [blogPosts, notesEntries] = await Promise.all([
+  const [blogPosts, notesEntries, dailyDocs] = await Promise.all([
     getCollection('blog', ({ data }) => !data.draft),
-    getCollection('notes', ({ data }) => !data.draft)
+    getCollection('notes', ({ data }) => !data.draft),
+    buildDailySearchDocs()
   ])
 
   const blogDocs = blogPosts.map<SearchDoc>((entry) => ({
@@ -107,7 +109,19 @@ async function buildSearchDocs(lang: 'zh' | 'en'): Promise<SearchDoc[]> {
     body: normalizeBody((entry as { body?: string }).body ?? '')
   }))
 
-  return [...blogDocs, ...noteDocs]
+  return [...blogDocs, ...noteDocs, ...dailyDocs]
+}
+
+async function buildDailySearchDocs(): Promise<SearchDoc[]> {
+  return (await getCollection('daily', ({ data }) => !data.draft)).map((entry) => ({
+    collection: 'daily',
+    title: entry.data.title,
+    description: entry.data.description,
+    url: `/curated/${entry.data.category}/${formatDate(entry.data.date)}`,
+    date: formatDate(entry.data.date),
+    tags: entry.data.tags,
+    body: normalizeBody(entry.body ?? '')
+  }))
 }
 
 function scoreDoc(doc: SearchDoc, query: string): SearchResult | null {

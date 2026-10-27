@@ -46,7 +46,7 @@ for (const entry of entries) {
               <a
                 href={`/notes/${entry.id}`}
                 aria-current={entry.id === currentId ? 'page' : undefined}
-                class='series-link flex gap-2 rounded-md px-2 py-2 text-sm leading-5 text-muted-foreground transition hover:bg-muted hover:text-foreground'
+                class='series-link flex gap-2 px-2 py-2 text-sm leading-5 text-muted-foreground transition hover:text-foreground'
                 data-astro-prefetch
               >
                 <span class='shrink-0 tabular-nums'>
@@ -64,9 +64,8 @@ for (const entry of entries) {
 
 <style>
   .series-link[aria-current='page'] {
-    background: hsl(var(--muted));
-    color: hsl(var(--foreground));
-    font-weight: 600;
+    color: hsl(var(--primary));
+    font-weight: 500;
     box-shadow: inset 2px 0 hsl(var(--primary));
   }
 </style>

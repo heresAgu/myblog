@@ -59,6 +59,18 @@ const toc = generateToc(headings)
         .filter((heading): heading is HTMLElement => Boolean(heading))
 
       this.tocLinks.forEach((link) => {
+        // KaTeX's accessible MathML and visible HTML otherwise both appear in heading metadata.
+        const renderedHeading = this.headings.find((heading) => heading.id === link.slug)
+        if (renderedHeading) {
+          const label = renderedHeading.cloneNode(true) as HTMLElement
+          label.querySelectorAll('.katex-mathml, a.anchor').forEach((node) => node.remove())
+          const text = label.textContent?.trim()
+          if (text) {
+            link.element.textContent = text
+            link.element.setAttribute('aria-label', `Scroll to section: ${text}`)
+          }
+        }
+
         link.element.addEventListener('click', (event) => {
           event.preventDefault()
 

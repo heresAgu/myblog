@@ -5,7 +5,6 @@ import avatar from 'src/assets/avatar.png'
 import '@fontsource-variable/geist'
 
 import IntroOverlay from '@/components/intro/IntroOverlay.astro'
-import JoJo from '@/components/mascot/JoJo'
 
 type FeedItem = {
   title: string
@@ -717,7 +716,6 @@ const totalStars = repos.reduce((sum, repo) => sum + repo.stars, 0)
     </section>
   </main>
 
-  <div id='home-jojo' class='home-jojo'><JoJo client:load size='md' quipPool='idle' /></div>
 </visual-home>
 
 <script>
@@ -2384,13 +2382,6 @@ const totalStars = repos.reduce((sum, repo) => sum + repo.stars, 0)
     font-size: 0.56rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-  }
-
-  .home-jojo {
-    position: fixed;
-    z-index: 20;
-    right: 1rem;
-    bottom: 1rem;
   }
 
   @media (max-width: 900px) {

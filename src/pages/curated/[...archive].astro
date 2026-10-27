@@ -1,0 +1,14 @@
+---
+import { getCollection } from 'astro:content'
+import { dailyArchivePages } from '@/lib/daily'
+
+import DailyArchive from '@/components/curated/DailyArchive.astro'
+
+export const prerender = true
+export async function getStaticPaths() {
+  return dailyArchivePages(await getCollection('daily'))
+}
+const entries = await getCollection('daily')
+---
+
+<DailyArchive {...Astro.props} {entries} />

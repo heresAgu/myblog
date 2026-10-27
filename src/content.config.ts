@@ -158,4 +158,20 @@ const talks = defineCollection({
   schema: talksSchema
 })
 
-export const collections = { blog, blogEn, notes, notesEn, curated, talks }
+const daily = defineCollection({
+  loader: glob({ base: './src/content/daily', pattern: '**/*.md' }),
+  schema: z.object({
+    title: z.string().max(100),
+    description: z.string().max(200),
+    date: z.coerce.date(),
+    category: z.enum(['github', 'ai']),
+    issue: z.number().int().positive(),
+    itemCount: z.number().int().positive(),
+    headline: z.string().max(100),
+    source: z.string().url().optional(),
+    tags: z.array(z.string()).default([]).transform(removeDupsAndLowerCase),
+    draft: z.boolean().default(true)
+  })
+})
+
+export const collections = { blog, blogEn, notes, notesEn, curated, talks, daily }

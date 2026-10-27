@@ -1,0 +1,23 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content'
+import { dailyDateKey, publishedDailyEntries } from '@/lib/daily'
+
+import DailyIssue from '@/components/curated/DailyIssue.astro'
+
+export const prerender = true
+export async function getStaticPaths() {
+  const entries = publishedDailyEntries(await getCollection('daily'))
+  return entries.map((entry) => ({
+    params: { category: entry.data.category, date: dailyDateKey(entry.data.date) },
+    props: { entry, entries }
+  }))
+}
+interface Props {
+  entry: CollectionEntry<'daily'>
+  entries: CollectionEntry<'daily'>[]
+}
+const { entry, entries } = Astro.props
+const { Content, headings } = await render(entry)
+---
+
+<DailyIssue {entry} {entries} {headings}><Content /></DailyIssue>

@@ -47,11 +47,12 @@ export const theme: ThemeUserConfig = {
   /** Configure the header of your site. */
   header: {
     menu: [
-      { title: 'Blog', link: '/blog' },
+      { title: 'Home', link: '/' },
       { title: 'Notes', link: '/notes' },
+      { title: 'Blog', link: '/blog' },
       { title: 'Projects', link: '/projects' },
-      { title: 'About', link: '/about' },
-      { title: 'Contact', link: '/contact' }
+      { title: 'Daily', link: '/curated' },
+      { title: 'About', link: '/about' }
     ]
   },
 
@@ -82,9 +83,7 @@ export const integ: IntegrationUserConfig = {
   // See: https://astro-pure.js.org/docs/integrations/links
   links: {
     // Friend logbook
-    logbook: [
-      { date: '2026-07-18', content: '友链页面就绪，等第一位朋友。' }
-    ],
+    logbook: [{ date: '2026-07-18', content: '友链页面就绪，等第一位朋友。' }],
     // Yourself link info
     applyTip: [
       { name: 'Name', val: theme.title },
@@ -131,6 +130,3 @@ export const integ: IntegrationUserConfig = {
 
 const config = { ...theme, integ } as Config
 export default config
-
-
-

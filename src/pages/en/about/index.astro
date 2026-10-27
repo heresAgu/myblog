@@ -1,21 +1,40 @@
-﻿---
-import PageLayout from '@/layouts/CommonPage.astro'
-
-const headings = [
-  { depth: 2, slug: 'about-me', text: 'About Me' },
-  { depth: 2, slug: 'about-blog', text: 'About Blog' }
-]
+---
+import PageLayout from '@/layouts/BaseLayout.astro'
 ---
 
-<PageLayout title='About' {headings} info='/en/about'>
-  <p>Developer</p>
-  <p>
-    I'm heresAgu, a developer. This blog is where I document my learning journey,
-    project builds, and thoughts on technology.
-  </p>
-
-  <h2 id='about-blog'>About This Blog</h2>
-  <p>
-    Built with Astro, hosted on Vercel. Mostly technical articles, study notes, and project summaries.
-  </p>
+<PageLayout
+  meta={{
+    title: 'About Agu',
+    description:
+      'A computer science student learning about systems, algorithms, and artificial intelligence.'
+  }}
+>
+  <main class='index-page'>
+    <header class='page-masthead' id='content-header'>
+      <p class='eyebrow'>THE PERSON BEHIND THE NOTES</p>
+      <h1>About<em>Agu.</em></h1>
+      <p>A computer science student, learning by reading, building, and writing things down.</p>
+    </header>
+    <article class='prose max-w-3xl' id='content'>
+      <h2>A little background</h2>
+      <p>
+        I study Computer Science and Technology at Beijing University of Posts and
+        Telecommunications.
+      </p>
+      <p>
+        My current studies include data structures, computer systems, digital logic, and deep
+        learning. I’m also exploring PyTorch, CUDA, and AI infrastructure.
+      </p>
+      <h2>About this notebook</h2>
+      <p>
+        This site is a record of my learning: explanations, implementations, experiments, and
+        questions I want to understand better. Most of the notes are currently written in Chinese.
+      </p>
+      <p>
+        The blog is built with Astro and hosted on Vercel. The contents grow and change as my
+        understanding develops.
+      </p>
+      <p><a href='/notes'>Explore the notes →</a></p>
+    </article>
+  </main>
 </PageLayout>

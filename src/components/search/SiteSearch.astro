@@ -6,10 +6,10 @@
         id='local-search-input'
         class='local-search-input'
         type='search'
-        placeholder='Search posts and notes...'
+        placeholder='Search posts, notes and daily issues...'
         autocomplete='off'
         spellcheck='false'
-        aria-label='Search posts and notes'
+        aria-label='Search posts, notes and daily issues'
       />
       <div id='local-search-status' class='local-search-status' aria-live='polite'></div>
       <ol id='local-search-results' class='local-search-results'></ol>
@@ -19,7 +19,7 @@
 
 <script>
   type LocalSearchResult = {
-    collection: 'blog' | 'notes'
+    collection: 'blog' | 'notes' | 'daily'
     title: string
     description?: string
     url: string
@@ -96,9 +96,8 @@
 
     const meta = document.createElement('div')
     meta.className = 'local-search-meta'
-    meta.textContent = [item.collection === 'blog' ? 'Blog' : 'Notes', item.date]
-      .filter(Boolean)
-      .join(' · ')
+    const labels = { blog: 'Blog', notes: 'Notes', daily: 'Daily' }
+    meta.textContent = [labels[item.collection], item.date].filter(Boolean).join(' · ')
 
     const excerpt = document.createElement('p')
     excerpt.className = 'local-search-excerpt'

@@ -1,0 +1,134 @@
+---
+import { Image } from 'astro:assets'
+import { getCollection } from 'astro:content'
+import { getNoteTopics } from '@/data/note-topics'
+
+import PageLayout from '@/layouts/BaseLayout.astro'
+import DailyPreview from '@/components/curated/DailyPreview.astro'
+import EntryRow from '@/components/EntryRow.astro'
+import HomeEntrance from '@/components/home/HomeEntrance.astro'
+import NoteTopicIndex from '@/components/notes/NoteTopicIndex.astro'
+import avatar from '@/assets/avatar.png'
+import config from '@/site-config'
+
+interface Props {
+  lang?: 'zh' | 'en'
+}
+const { lang = 'zh' } = Astro.props
+const copy =
+  lang === 'en'
+    ? {
+        pageTitle: 'heresAgu · A personal notebook',
+        role: 'COMPUTER SCIENCE STUDENT',
+        school: 'Beijing University of Posts and Telecommunications',
+
+        intro:
+          'Notes on systems, algorithms, and artificial intelligence. Currently written in Chinese.',
+        read: 'Read the notes',
+        about: 'About me',
+
+        notebooks: 'Notebooks',
+        allNotes: 'All notes',
+        latest: 'Recently added',
+
+        csappKind: 'CSAPP · Notes',
+        noteKind: 'Notes',
+        postKind: 'Writing'
+      }
+    : {
+        pageTitle: 'heresAgu · 学习与思考的记录',
+        role: '计算机科学 · 学习与实践',
+        school: '北京邮电大学 · 计算机科学与技术',
+
+        intro: '记录计算机系统、算法与人工智能的学习与实践。',
+        read: '翻开笔记',
+        about: '关于我',
+
+        notebooks: '专题笔记',
+        allNotes: '全部笔记',
+        latest: '最近更新',
+
+        csappKind: 'CSAPP · 学习笔记',
+        noteKind: '学习笔记',
+        postKind: '文章'
+      }
+
+const notes = (await getCollection('notes')).filter((entry) => !entry.data.draft)
+const posts = (await getCollection('blog')).filter((entry) => !entry.data.draft)
+const daily = await getCollection('daily')
+const topics = getNoteTopics(notes)
+const latest = [
+  ...notes.map((entry) => ({
+    title: entry.data.title,
+    description: entry.data.description,
+    href: `/notes/${entry.id}`,
+    date: entry.data.updatedDate ?? entry.data.date,
+    category: entry.data.tags.includes('csapp') ? copy.csappKind : copy.noteKind,
+    order: entry.data.order ?? 0
+  })),
+  ...posts.map((entry) => ({
+    title: entry.data.title,
+    description: entry.data.description,
+    href: `/blog/${entry.id}`,
+    date: entry.data.updatedDate ?? entry.data.publishDate,
+    category: copy.postKind,
+    order: 0
+  }))
+]
+  .sort((a, b) => +b.date - +a.date || b.order - a.order)
+  .slice(0, 5)
+---
+
+<PageLayout meta={{ title: copy.pageTitle }}>
+  <HomeEntrance {lang} />
+  <main class='editorial-home'>
+    <section class='home-hero' aria-labelledby='home-title'>
+      <div class='home-hero__copy'>
+        <p class='eyebrow'>{copy.role}</p>
+        <h1 id='home-title'><span data-home-entrance-title>{config.author}</span></h1>
+        <p class='home-hero__school'>{copy.school}</p>
+        <p class='home-hero__intro'>{copy.intro}</p>
+        <div class='home-hero__links'>
+          <a href='/notes' class='text-link'>{copy.read} <span aria-hidden='true'>↗</span></a>
+          <a href={lang === 'en' ? '/en/about' : '/about'} class='quiet-link'>
+            {copy.about}
+            <span aria-hidden='true'>↗</span>
+          </a>
+        </div>
+      </div>
+      <Image
+        src={avatar}
+        alt={lang === 'en' ? 'heresAgu’s avatar' : 'heresAgu 的头像'}
+        class='home-hero__avatar'
+        width={256}
+        height={256}
+        loading='eager'
+        fetchpriority='high'
+      />
+    </section>
+
+    <DailyPreview entries={daily} {lang} />
+
+    {
+      topics.length > 0 && (
+        <section class='home-notebook' aria-labelledby='notebook-title'>
+          <div class='section-heading'>
+            <h2 id='notebook-title'>
+              <span>01</span> {copy.notebooks}
+            </h2>
+            <a href='/notes'>{copy.allNotes} ↗</a>
+          </div>
+          <NoteTopicIndex {topics} {lang} />
+        </section>
+      )
+    }
+
+    <section class='home-latest' aria-labelledby='latest-title'>
+      <div class='section-heading'>
+        <h2 id='latest-title'><span>02</span> {copy.latest}</h2>
+        <span class='section-heading__aside'>NOTES & WRITING</span>
+      </div>
+      <ul class='entry-list'>{latest.map((entry) => <EntryRow {...entry} />)}</ul>
+    </section>
+  </main>
+</PageLayout>

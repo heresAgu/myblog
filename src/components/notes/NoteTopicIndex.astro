@@ -1,0 +1,28 @@
+---
+import type { getNoteTopics } from '@/data/note-topics'
+
+interface Props {
+  topics: ReturnType<typeof getNoteTopics>
+  lang?: 'zh' | 'en'
+}
+
+const { topics, lang = 'zh' } = Astro.props
+---
+
+<ul class='notebook-index'>
+  {
+    topics.map((topic) => (
+      <li>
+        <a href={topic.href} data-astro-prefetch>
+          <div>
+            <h3>{topic.title}</h3>
+            <p>{lang === 'en' ? topic.descriptionEn : topic.description}</p>
+          </div>
+          <span class='notebook-index__count'>
+            {topic.count} {lang === 'en' ? 'notes' : '篇'} <span aria-hidden='true'>↗</span>
+          </span>
+        </a>
+      </li>
+    ))
+  }
+</ul>

@@ -9,24 +9,26 @@ export type Lang = keyof typeof languages
 
 export const ui = {
   zh: {
-    'nav.blog': 'Blog',
-    'nav.notes': 'Notes',
-    'nav.curated': 'Curated',
-    'nav.projects': 'Projects',
+    'nav.home': '主页',
+    'nav.blog': '文章',
+    'nav.notes': '笔记',
+    'nav.curated': '精选',
+    'nav.projects': '项目',
     'nav.links': 'Links',
-    'nav.about': 'About',
-    'nav.contact': 'Contact',
-    'nav.search': 'Search',
-    'nav.toggleMenu': 'Menu',
-    'nav.toggleDarkMode': 'Dark Theme',
+    'nav.about': '关于',
+    'nav.contact': '联系',
+    'nav.search': '搜索',
+    'nav.toggleMenu': '展开导航',
+    'nav.toggleDarkMode': '切换明暗模式',
     'nav.toggleLang': '切换语言',
     'notice.translating': '网站界面已提供英文版，但大部分博客与笔记仍为中文，翻译正在进行中。',
     'home.title': '首页'
   },
   en: {
+    'nav.home': 'Home',
     'nav.blog': 'Blog',
     'nav.notes': 'Notes',
-    'nav.curated': 'Curated',
+    'nav.curated': 'Daily',
     'nav.projects': 'Projects',
     'nav.links': 'Links',
     'nav.about': 'About',
@@ -84,8 +86,18 @@ export function localizedPath(path: string, lang: Lang): string {
  */
 export function hasEnAlternate(barePath: string): boolean {
   if (barePath === '/') return true
+  if (/^\/curated(?:\/(?:github|ai))?(?:\/page\/\d+)?$/.test(barePath)) return true
   if (
-    ['/about', '/projects', '/links', '/contact', '/search', '/curated', '/tags'].includes(barePath)
+    [
+      '/about',
+      '/projects',
+      '/projects/tablens',
+      '/links',
+      '/contact',
+      '/search',
+      '/curated',
+      '/tags'
+    ].includes(barePath)
   )
     return true
   // blog & notes: only the paginated list is mirrored under /en, not detail pages

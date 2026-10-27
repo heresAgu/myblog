@@ -4,8 +4,10 @@ import { getImage } from 'astro:assets'
 import { getCollection, type CollectionEntry } from 'astro:content'
 import rss from '@astrojs/rss'
 import type { Root } from 'mdast'
+import rehypeKatex from 'rehype-katex'
 import rehypeStringify from 'rehype-stringify'
 import remarkCjkFriendly from 'remark-cjk-friendly'
+import remarkMath from 'remark-math'
 import remarkMdx from 'remark-mdx'
 import remarkParse from 'remark-parse'
 import remarkRehype from 'remark-rehype'
@@ -56,10 +58,12 @@ const renderContent = async (post: CollectionEntry<'blog' | 'blogEn'>, site: URL
 
   const file = await unified()
     .use(remarkParse)
+    .use(remarkMath)
     .use(remarkMdx)
     .use(remarkCjkFriendly)
     .use(remarkReplaceImageLink)
     .use(remarkRehype)
+    .use(rehypeKatex, { output: 'mathml' })
     .use(rehypeStringify)
     .process(post.body)
 

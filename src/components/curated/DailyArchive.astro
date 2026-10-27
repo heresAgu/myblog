@@ -1,0 +1,271 @@
+---
+import type { Lang } from '@/i18n/ui'
+import {
+  dailyArchiveHref,
+  dailyIssueHref,
+  dailyLabels,
+  publishedDailyEntries,
+  type DailyEntry,
+  type DailyFilter,
+  type DailyGroup
+} from '@/lib/daily'
+
+import PageLayout from '@/layouts/BaseLayout.astro'
+
+interface Props {
+  entries: DailyEntry[]
+  groups: DailyGroup[]
+  filter: DailyFilter
+  page: number
+  totalPages: number
+  lang?: Lang
+}
+const { entries, groups, filter, page, totalPages, lang = 'zh' } = Astro.props
+const published = publishedDailyEntries(entries)
+const labels = dailyLabels[lang]
+const copy =
+  lang === 'zh'
+    ? {
+        title: '精选',
+        description: 'GitHub 应用推荐与 AI 技术情报，按日期归档。',
+        issues: '期',
+        items: '项',
+        issue: '第',
+        empty: '这个分类还没有发布的日报。',
+        previous: '← 更新的内容',
+        next: '更早的内容 →',
+        page: '页',
+        filters: '精选分类'
+      }
+    : {
+        title: 'Daily finds',
+        description:
+          'GitHub applications and AI briefings, collected by publication date. Issues are currently written in Chinese.',
+        issues: 'issues',
+        items: 'items',
+        issue: '#',
+        empty: 'No published issues in this category yet.',
+        previous: '← Newer issues',
+        next: 'Older issues →',
+        page: 'page',
+        filters: 'Issue categories'
+      }
+const counts = {
+  all: published.length,
+  github: published.filter((entry) => entry.data.category === 'github').length,
+  ai: published.filter((entry) => entry.data.category === 'ai').length
+}
+const filters: DailyFilter[] = ['all', 'github', 'ai']
+---
+
+<PageLayout
+  meta={{
+    title: filter === 'all' ? copy.title : `${labels[filter]} · ${copy.title}`,
+    description: copy.description
+  }}
+>
+  <main class='index-page daily-archive'>
+    <header class='page-masthead daily-masthead' id='content-header'>
+      <p class='eyebrow'>DAILY FINDS & BRIEFINGS</p>
+      <h1>{copy.title}{lang === 'zh' && <em>Daily.</em>}</h1>
+      <p>{copy.description}</p>
+    </header>
+    <nav class='daily-filters' aria-label={copy.filters}>
+      {
+        filters.map((category) => (
+          <a
+            href={dailyArchiveHref(category, 1, lang)}
+            aria-current={filter === category ? 'page' : undefined}
+          >
+            {labels[category]} <span>{counts[category]}</span>
+          </a>
+        ))
+      }
+    </nav>
+    <div id='content' class='daily-groups'>
+      {
+        groups.map((group) => (
+          <section class='daily-group' aria-labelledby={`day-${group.date}`}>
+            <h2 id={`day-${group.date}`}>
+              <time datetime={group.date}>{group.date.replaceAll('-', '.')}</time>
+            </h2>
+            <ul>
+              {group.entries.map((entry) => (
+                <li>
+                  <a class='daily-row' href={dailyIssueHref(entry)}>
+                    <div class='daily-row__category'>
+                      <span>{labels[entry.data.category]}</span>
+                      <span>
+                        {copy.issue}
+                        {String(entry.data.issue).padStart(2, '0')}
+                        {lang === 'zh' ? ' 期' : ''} · {entry.data.itemCount} {copy.items}
+                      </span>
+                    </div>
+                    <div class='daily-row__body'>
+                      <h3>{entry.data.title}</h3>
+                      <p>{entry.data.description}</p>
+                    </div>
+                    <span class='daily-row__arrow' aria-hidden='true'>
+                      ↗
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))
+      }
+      {groups.length === 0 && <p class='daily-empty'>{copy.empty}</p>}
+    </div>
+    {
+      totalPages > 1 && (
+        <nav class='daily-pagination' aria-label={lang === 'zh' ? '归档分页' : 'Archive pages'}>
+          {page > 1 ? (
+            <a href={dailyArchiveHref(filter, page - 1, lang)} rel='prev'>
+              {copy.previous}
+            </a>
+          ) : (
+            <span />
+          )}
+          <span>
+            {page} / {totalPages}
+          </span>
+          {page < totalPages ? (
+            <a href={dailyArchiveHref(filter, page + 1, lang)} rel='next'>
+              {copy.next}
+            </a>
+          ) : (
+            <span />
+          )}
+        </nav>
+      )
+    }
+  </main>
+</PageLayout>
+
+<style>
+  .daily-masthead {
+    margin-bottom: 2.3rem;
+  }
+  .daily-masthead h1 {
+    font-size: clamp(2.3rem, 4vw, 3rem);
+  }
+  .daily-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem 2rem;
+    padding-bottom: 1.15rem;
+    border-bottom: 1px solid hsl(var(--border));
+  }
+  .daily-filters a {
+    color: hsl(var(--muted-foreground));
+    font-size: 0.8rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid transparent;
+  }
+  .daily-filters a[aria-current] {
+    color: hsl(var(--foreground));
+    border-color: hsl(var(--primary));
+  }
+  .daily-filters a > span {
+    margin-left: 0.4rem;
+    font-size: 0.65rem;
+    color: hsl(var(--muted-foreground));
+  }
+  .daily-group {
+    display: grid;
+    grid-template-columns: 9rem minmax(0, 1fr);
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+  .daily-group > h2 {
+    padding-top: 1.25rem;
+    color: hsl(var(--primary));
+    font-size: 0.88rem;
+    font-weight: 400;
+    font-variant-numeric: tabular-nums;
+  }
+  .daily-group ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .daily-group li {
+    border-bottom: 1px solid hsl(var(--border));
+  }
+  .daily-row {
+    display: grid;
+    grid-template-columns: 7rem minmax(0, 1fr) 1rem;
+    gap: 1.5rem;
+    padding: 1.25rem 0;
+  }
+  .daily-row__category {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    padding-top: 0.2rem;
+    font-size: 0.7rem;
+    color: hsl(var(--primary));
+  }
+  .daily-row__category > span + span {
+    color: hsl(var(--muted-foreground));
+    font-size: 0.65rem;
+  }
+  .daily-row h3 {
+    font-family: var(--font-serif);
+    font-size: 1.08rem;
+    font-weight: 500;
+    line-height: 1.6;
+  }
+  .daily-row__body p {
+    margin-top: 0.5rem;
+    color: hsl(var(--muted-foreground));
+    font-size: 0.79rem;
+    line-height: 1.9;
+  }
+  .daily-row__arrow {
+    color: hsl(var(--muted-foreground));
+  }
+  .daily-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 3rem;
+    font-size: 0.75rem;
+    color: hsl(var(--muted-foreground));
+  }
+  .daily-empty {
+    padding: 3rem 0;
+    color: hsl(var(--muted-foreground));
+    font-size: 0.85rem;
+  }
+  @media (max-width: 760px) {
+    .daily-group {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0;
+      margin-top: 1.2rem;
+    }
+    .daily-group > h2 {
+      padding: 0.7rem 0;
+      font-size: 0.76rem;
+    }
+    .daily-row {
+      grid-template-columns: minmax(0, 1fr) 1rem;
+      gap: 0.5rem 1rem;
+      padding: 1rem 0;
+    }
+    .daily-row__category {
+      grid-column: 1 / -1;
+      flex-direction: row;
+      gap: 0.7rem;
+      align-items: baseline;
+    }
+    .daily-row h3 {
+      font-size: 1.02rem;
+    }
+    .daily-row__body p {
+      margin-top: 0.35rem;
+    }
+  }
+</style>

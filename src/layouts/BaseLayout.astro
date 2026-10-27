@@ -3,13 +3,12 @@ import { getLangFromUrl } from '@/i18n/ui'
 import Analytics from '@vercel/analytics/astro'
 import SpeedInsights from '@vercel/speed-insights/astro'
 
-import { Footer } from 'astro-pure/components/basic'
 import type { SiteMeta } from 'astro-pure/types'
 import AnalyticsEvents from '@/components/AnalyticsEvents.astro'
 import BaseHead from '@/components/BaseHead.astro'
 import ViewCounter from '@/components/comment/ViewCounter.astro'
 import Header from '@/components/Header.astro'
-import DevModeHost from '@/components/terminal/DevModeHost'
+import Footer from '@/components/SiteFooter.astro'
 import ThemeProvider from '@/components/ThemeProvider.astro'
 import config from '@/site-config'
 
@@ -43,18 +42,9 @@ const htmlLang = lang === 'en' ? 'en' : config.locale.lang
   </head>
 
   <body class='flex justify-center bg-background text-foreground' {...props}>
-    {
-      highlightColor && (
-        <div
-          id='highlight-gradient'
-          class='pointer-events-none absolute start-0 top-0 z-0 h-screen w-full opacity-25'
-          style={`background-image:linear-gradient(${highlightColor},transparent)`}
-        />
-      )
-    }
     <div
       class:list={[
-        'w-full',
+        'site-shell w-full',
         chrome && 'px-4 sm:px-7 lg:px-10',
         chrome && (wide ? 'max-w-[90rem]' : 'max-w-[70rem]')
       ]}
@@ -63,7 +53,6 @@ const htmlLang = lang === 'en' ? 'en' : config.locale.lang
       <slot />
       {chrome && <Footer />}
     </div>
-    <DevModeHost client:only='react' />
     <Analytics />
     <AnalyticsEvents />
     <SpeedInsights />

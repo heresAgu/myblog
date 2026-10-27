@@ -1,0 +1,137 @@
+---
+import type { MarkdownHeading } from 'astro'
+import {
+  dailyArchiveHref,
+  dailyDateKey,
+  dailyIssueHref,
+  dailyLabels,
+  publishedDailyEntries,
+  type DailyEntry
+} from '@/lib/daily'
+
+import PageLayout from '@/layouts/ContentLayout.astro'
+import TableOfContents from '@/components/navigation/TableOfContents.astro'
+
+interface Props {
+  entry: DailyEntry
+  entries: DailyEntry[]
+  headings: MarkdownHeading[]
+}
+const { entry, entries, headings } = Astro.props
+const { data } = entry
+const series = publishedDailyEntries(entries).filter((item) => item.data.category === data.category)
+const index = series.findIndex((item) => item.id === entry.id)
+const older = series[index + 1]
+const newer = series[index - 1]
+const outline = headings.filter((heading) => heading.depth === 2)
+const date = dailyDateKey(data.date)
+---
+
+<PageLayout
+  meta={{ title: data.title, description: data.description, articleDate: data.date.toISOString() }}
+  back='/curated'
+>
+  <TableOfContents slot='sidebar' headings={outline} />
+  <header slot='header' class='daily-issue-header'>
+    <p class='daily-issue-meta'>
+      <a href={dailyArchiveHref(data.category)}>{dailyLabels.zh[data.category]}</a>
+      <time datetime={date}>{date.replaceAll('-', '.')}</time>
+      <span>第 {String(data.issue).padStart(2, '0')} 期 · {data.itemCount} 项</span>
+    </p>
+    <h1>{data.title}</h1>
+    <p class='daily-issue-description'>{data.description}</p>
+  </header>
+  <div class='daily-issue-content'><slot /></div>
+  <div slot='bottom' class='daily-issue-bottom'>
+    {
+      data.source && (
+        <a href={data.source} target='_blank' rel='noopener noreferrer'>
+          原始日报 ↗
+        </a>
+      )
+    }
+    <p>按当期日期归档。Stars 为原日报记录的历史快照，功能与版本请以官方来源为准。</p>
+    <nav aria-label='同类日报翻页'>
+      {
+        older ? (
+          <a href={dailyIssueHref(older)} rel='prev'>
+            ← 上一期<span>{older.data.title}</span>
+          </a>
+        ) : (
+          <span />
+        )
+      }
+      {
+        newer ? (
+          <a href={dailyIssueHref(newer)} rel='next'>
+            下一期 →<span>{newer.data.title}</span>
+          </a>
+        ) : (
+          <span />
+        )
+      }
+    </nav>
+  </div>
+</PageLayout>
+
+<style>
+  .daily-issue-content > :global(:first-child) {
+    margin-top: 0;
+  }
+  .daily-issue-content :global(th),
+  .daily-issue-content :global(td) {
+    white-space: nowrap;
+  }
+  .daily-issue-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.5rem 1.25rem;
+    color: hsl(var(--muted-foreground));
+    font-size: 0.73rem;
+  }
+  .daily-issue-meta > a {
+    color: hsl(var(--primary));
+  }
+  .daily-issue-header h1 {
+    margin-top: 1rem;
+    font-size: clamp(1.65rem, 3vw, 2.2rem);
+  }
+  .daily-issue-description {
+    margin-top: 0.75rem;
+    color: hsl(var(--muted-foreground));
+    font-size: 0.92rem;
+    line-height: 1.9;
+  }
+  .daily-issue-bottom {
+    border-top: 1px solid hsl(var(--border));
+    padding-top: 1.4rem;
+    font-size: 0.78rem;
+  }
+  .daily-issue-bottom > a {
+    color: hsl(var(--primary));
+  }
+  .daily-issue-bottom > p {
+    margin-top: 0.6rem;
+    font-size: 0.73rem;
+    line-height: 1.9;
+  }
+  .daily-issue-bottom nav {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+  .daily-issue-bottom nav > a {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .daily-issue-bottom nav > a:last-child {
+    text-align: end;
+  }
+  .daily-issue-bottom nav span {
+    font-size: 0.74rem;
+    line-height: 1.8;
+  }
+</style>

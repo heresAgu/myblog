@@ -1,0 +1,36 @@
+---
+interface Props {
+  href: string
+  title: string
+  description?: string
+  date?: Date
+  index?: string
+  category?: string
+  status?: string
+  compact?: boolean
+}
+
+const { href, title, description, date, index, category, status, compact = false } = Astro.props
+const shortDate = date?.toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit' })
+---
+
+<li class:list={['entry-row', { 'entry-row--compact': compact }]}>
+  <a href={href} data-astro-prefetch>
+    <span class='entry-row__index'>
+      {index ?? (date ? <time datetime={date.toISOString()}>{shortDate}</time> : '—')}
+    </span>
+    <div class='entry-row__body'>
+      <h3>{title}</h3>
+      {description && <p>{description}</p>}
+      {
+        (category || status) && (
+          <div class='entry-row__meta'>
+            {category && <span>{category}</span>}
+            {status && status !== 'ready' && <span>{status}</span>}
+          </div>
+        )
+      }
+    </div>
+    <span class='entry-row__arrow' aria-hidden='true'>↗</span>
+  </a>
+</li>

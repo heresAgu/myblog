@@ -1,0 +1,173 @@
+---
+import { Image } from 'astro:assets'
+
+import avatar from '@/assets/avatar.png'
+import config from '@/site-config'
+
+const { lang = 'zh' } = Astro.props as { lang?: 'zh' | 'en' }
+---
+
+<div
+  id='home-entrance'
+  class='home-entrance'
+  role='dialog'
+  aria-modal='true'
+  aria-label={lang === 'en' ? 'Welcome to heresAgu' : 'heresAgu 博客开场'}
+  hidden
+>
+  <div class='home-entrance__veil'></div>
+  <div class='home-entrance__portrait' aria-hidden='true'>
+    <div class='home-entrance__image'>
+      <Image src={avatar} alt='' width={256} height={256} loading='eager' />
+    </div>
+    <svg viewBox='0 0 100 100' fill='none'>
+      <circle cx='50' cy='50' r='50' pathLength='1' vector-effect='non-scaling-stroke'></circle>
+    </svg>
+  </div>
+  <span class='home-entrance__name' aria-hidden='true'>{config.author}</span>
+  <button class='home-entrance__skip' type='button'>
+    {lang === 'en' ? 'Skip intro' : '跳过开场'}
+    <span aria-hidden='true'>Esc</span>
+  </button>
+</div>
+
+<script is:inline>
+  ;(() => {
+    const overlay = document.getElementById('home-entrance')
+    if (!overlay) return
+    const query = new URLSearchParams(location.search).get('intro')
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
+    const navigation = performance.getEntriesByType('navigation')[0]
+    let seen = false
+    let internal = false
+    try {
+      seen = sessionStorage.getItem('agu:home-entrance:v1') === 'seen'
+      internal = Boolean(document.referrer) && new URL(document.referrer).origin === location.origin
+    } catch {
+      // The animation also works when browser storage is unavailable.
+    }
+    if (
+      reduced ||
+      !Element.prototype.animate ||
+      query === 'off' ||
+      (query !== 'play' && (seen || internal || navigation?.type === 'back_forward'))
+    )
+      return
+
+    overlay.hidden = false
+    document.documentElement.classList.add('agu-home-entrance')
+    window.__aguHomeIntroTimer = window.setTimeout(() => {
+      window.dispatchEvent(new Event('agu:home-intro-cancel'))
+      document.documentElement.classList.remove('agu-home-entrance')
+      document.querySelectorAll('[data-agu-intro-inert]').forEach((element) => {
+        element.inert = false
+        element.removeAttribute('data-agu-intro-inert')
+      })
+      overlay.hidden = true
+    }, 3500)
+  })()
+</script>
+
+<script>
+  import { initHomeEntrance } from '@/lib/home-entrance'
+
+  initHomeEntrance()
+</script>
+
+<style is:global>
+  html.agu-home-entrance {
+    overflow: hidden;
+    scrollbar-gutter: stable;
+  }
+  html.agu-home-entrance :is(.site-header, .editorial-home, .site-shell > footer) {
+    opacity: 0;
+  }
+  html.agu-home-entrance :is([data-home-entrance-title], .home-hero__avatar) {
+    visibility: hidden;
+  }
+  .home-entrance[hidden] {
+    display: none !important;
+  }
+  .home-entrance {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    color: hsl(var(--foreground));
+    touch-action: none;
+    isolation: isolate;
+  }
+  .home-entrance__veil {
+    position: absolute;
+    inset: 0;
+    background: hsl(var(--background));
+  }
+  .home-entrance__portrait {
+    position: fixed;
+    top: calc(50% - 98px);
+    left: calc(50% - 48px);
+    width: 96px;
+    height: 96px;
+    transform-origin: 0 0;
+    opacity: 0;
+  }
+  .home-entrance__image,
+  .home-entrance__image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+  .home-entrance__portrait svg {
+    position: absolute;
+    inset: calc(0px - var(--entrance-outline, 10.5px));
+    width: calc(100% + var(--entrance-outline, 10.5px) + var(--entrance-outline, 10.5px));
+    height: calc(100% + var(--entrance-outline, 10.5px) + var(--entrance-outline, 10.5px));
+    overflow: visible;
+    transform: rotate(-90deg);
+    stroke: hsl(var(--border));
+    stroke-width: 1;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+  }
+  .home-entrance__name {
+    position: fixed;
+    inset: auto;
+    display: block;
+    font-family: var(--font-literary);
+    font-weight: 400;
+    letter-spacing: -0.065em;
+    white-space: nowrap;
+    transform-origin: 0 0;
+    opacity: 0;
+  }
+  .home-entrance__skip {
+    position: fixed;
+    right: max(1.25rem, calc((100vw - 64rem) / 2));
+    bottom: max(1.5rem, env(safe-area-inset-bottom));
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.6rem 0;
+    border: 0;
+    background: transparent;
+    color: hsl(var(--muted-foreground));
+    font: 0.75rem var(--font-sans);
+    cursor: pointer;
+  }
+  .home-entrance__skip span {
+    font: 0.65rem var(--font-mono);
+    opacity: 0.65;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .home-entrance {
+      display: none !important;
+    }
+    html.agu-home-entrance :is(.site-header, .editorial-home, .site-shell > footer) {
+      opacity: 1;
+    }
+    html.agu-home-entrance :is([data-home-entrance-title], .home-hero__avatar) {
+      visibility: visible;
+    }
+  }
+</style>
