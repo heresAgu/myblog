@@ -3,7 +3,29 @@
     {
       "id_name": "friend-links",
       "desc": "Friends I exchange blog links with",
-      "link_list": []
+      "link_list": [
+        {
+          "name": "GYX’s Blog",
+          "author": "GYX",
+          "intro": "CS Notes and Daily Life。",
+          "link": "https://www.gyxblog.com/",
+          "avatar": "https://www.gyxblog.com/gyx-dinosaur-192.png"
+        },
+        {
+          "name": "kbyy Personal Blog",
+          "author": "空白阴影 · Linzy",
+          "intro": "Be the change that you wish to see in the world",
+          "link": "https://kbyylin-blog.vercel.app/",
+          "avatar": "https://kbyylin-blog.vercel.app/favicon/apple-touch-icon.png?v=madeline-cartoon-20261011"
+        },
+        {
+          "name": "Eason’s Notes",
+          "author": "Eason Lin",
+          "intro": "“史努比的红狗屋”",
+          "link": "https://easonlin-blog.vercel.app/",
+          "avatar": "https://easonlin-blog.vercel.app/icon-192.png"
+        }
+      ]
     },
     {
       "id_name": "inactive-links",

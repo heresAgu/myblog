@@ -52,6 +52,7 @@ export const theme: ThemeUserConfig = {
       { title: 'Blog', link: '/blog' },
       { title: 'Projects', link: '/projects' },
       { title: 'Daily', link: '/curated' },
+      { title: 'Friends', link: '/links' },
       { title: 'About', link: '/about' }
     ]
   },
@@ -83,13 +84,16 @@ export const integ: IntegrationUserConfig = {
   // See: https://astro-pure.js.org/docs/integrations/links
   links: {
     // Friend logbook
-    logbook: [{ date: '2026-07-18', content: '友链页面就绪，等第一位朋友。' }],
+    logbook: [
+      { date: '2026-07-18', content: '友链页面就绪，等第一位朋友。' },
+      { date: '2026-10-27', content: '加入 GYX、空白阴影和 Eason Lin 的博客。' }
+    ],
     // Yourself link info
     applyTip: [
       { name: 'Name', val: theme.title },
       { name: 'Desc', val: theme.description || 'Null' },
       { name: 'Link', val: 'https://heresagu-blog.vercel.app/' },
-      { name: 'Avatar', val: 'https://heresagu-blog.vercel.app/favicon/favicon.ico' }
+      { name: 'Avatar', val: 'https://heresagu-blog.vercel.app/avatar.png' }
     ]
   },
   // Page search runs on /api/search.json (see SiteSearch.astro); pagefind build hook disabled

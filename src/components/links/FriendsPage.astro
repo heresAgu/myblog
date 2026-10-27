@@ -1,0 +1,413 @@
+---
+import { Image } from 'astro:assets'
+import type { Lang } from '@/i18n/ui'
+import links from 'public/links.json'
+
+import PageLayout from '@/layouts/BaseLayout.astro'
+import avatar from '@/assets/avatar.png'
+import config from '@/site-config'
+
+const { lang = 'zh' } = Astro.props as { lang?: Lang }
+const en = lang === 'en'
+const friends = links.friends[0].link_list
+const copy = {
+  title: en ? 'Friends' : '友链',
+  description: en
+    ? 'Friends who write about learning, creating, and everyday life.'
+    : '朋友们记录学习与生活的地方。',
+  visit: en ? 'Visit blog' : '去逛逛',
+  random: en ? 'Visit a random friend' : '随机串门',
+  exchange: en ? 'Exchange links' : '互换友链',
+  exchangeDescription: en
+    ? 'Have a blog? Send me its address and a short introduction.'
+    : '如果你也有博客，可以把地址和简介发给我。',
+  contact: en ? 'Get in touch' : '联系我',
+  address: en ? 'Website' : '网址',
+  avatar: en ? 'Avatar' : '头像',
+  copy: en ? 'Copy site info' : '复制本站友链信息',
+  copied: en ? 'Copied. See you on your blog!' : '已复制，可以带去你的博客了。',
+  failed: en
+    ? 'Please copy the information above manually.'
+    : '暂时无法自动复制，请手动复制上方信息。'
+}
+const siteBase = Astro.site ?? new URL(Astro.url.origin)
+const siteInfo = config.integ.links?.applyTip ?? [
+  { name: 'Name', val: config.title },
+  { name: 'Desc', val: config.description ?? '' },
+  { name: 'Link', val: siteBase.href },
+  { name: 'Avatar', val: new URL('/avatar.png', siteBase).href }
+]
+const ownLink = siteInfo.find((item) => item.name === 'Link')?.val ?? siteBase.href
+const ownAvatar =
+  siteInfo.find((item) => item.name === 'Avatar')?.val ?? new URL('/avatar.png', ownLink).href
+const exchangeText = siteInfo.map((item) => `${item.name}: ${item.val}`).join('\n')
+---
+
+<PageLayout meta={{ title: copy.title, description: copy.description }}>
+  <main class='index-page friends-page'>
+    <header class='friends-heading'>
+      <div><h1>{copy.title}</h1><p>{copy.description}</p></div>
+      <span>{String(friends.length).padStart(2, '0')} / FRIENDS</span>
+    </header>
+    <ul class='friend-grid' aria-label={en ? 'Friends’ blogs' : '朋友的博客'}>
+      {
+        friends.map((friend) => (
+          <li>
+            <a
+              class='friend-link'
+              href={friend.link}
+              target='_blank'
+              rel='friend noopener noreferrer'
+              aria-label={`${copy.visit} · ${friend.name}`}
+            >
+              <div class='friend-identity'>
+                <span class='friend-avatar' aria-hidden='true'>
+                  <span>{friend.author.slice(0, 1)}</span>
+                  <img
+                    src={friend.avatar}
+                    alt=''
+                    width='64'
+                    height='64'
+                    loading='lazy'
+                    decoding='async'
+                    referrerpolicy='no-referrer'
+                  />
+                </span>
+                <div>
+                  <>
+                    <p>{friend.author}</p>
+                    <h2>{friend.name}</h2>
+                  </>
+                </div>
+              </div>
+              <p class='friend-description'>{friend.intro}</p>
+              <span class='friend-address'>
+                <>
+                  <span>{new URL(friend.link).hostname.replace(/^www\./, '')}</span>
+                  <span aria-hidden='true'>↗</span>
+                </>
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <div class='friends-afterword'>
+      <a
+        class='quiet-link'
+        href={friends[0]?.link ?? ownLink}
+        data-random-friend
+        data-friend-urls={JSON.stringify(friends.map((friend) => friend.link))}
+        target='_blank'
+        rel='friend noopener noreferrer'>{copy.random}<span aria-hidden='true'>↗</span></a
+      >
+    </div>
+    <section class='friend-exchange' aria-labelledby='exchange-title'>
+      <div class='friend-exchange__intro'>
+        <h2 id='exchange-title'>{copy.exchange}</h2><p>{copy.exchangeDescription}</p><a
+          class='text-link'
+          href={en ? '/en/contact' : '/contact'}>{copy.contact}<span aria-hidden='true'>↗</span></a
+        >
+      </div>
+      <div class='friend-site'>
+        <div class='friend-site__heading'>
+          <Image src={avatar} alt='' width={64} height={64} loading='lazy' /><div>
+            <h3>{config.title}</h3><p>{config.description}</p>
+          </div>
+        </div>
+        <dl>
+          <div><dt>{copy.address}</dt><dd><a href={ownLink}>{ownLink}</a></dd></div><div>
+            <dt>{copy.avatar}</dt><dd>
+              <a href={ownAvatar} target='_blank' rel='noopener noreferrer'>{ownAvatar}</a>
+            </dd>
+          </div>
+        </dl>
+        <button
+          class='friend-copy'
+          type='button'
+          data-copy-friend-info
+          data-copy-text={exchangeText}
+          data-copied={copy.copied}
+          data-failed={copy.failed}>{copy.copy}<span aria-hidden='true'>⧉</span></button
+        >
+        <p class='friend-copy-status' role='status' aria-live='polite'></p>
+      </div>
+    </section>
+  </main>
+</PageLayout>
+
+<script>
+  document.querySelectorAll<HTMLImageElement>('.friend-avatar img').forEach((image) => {
+    const loaded = () => image.parentElement?.classList.add('has-avatar')
+    const failed = () => {
+      image.hidden = true
+    }
+    image.addEventListener('load', loaded, { once: true })
+    image.addEventListener('error', failed, { once: true })
+    if (image.complete) image.naturalWidth ? loaded() : failed()
+  })
+  const randomLink = document.querySelector<HTMLAnchorElement>('[data-random-friend]')
+  if (randomLink) {
+    const urls = JSON.parse(randomLink.dataset.friendUrls ?? '[]') as string[]
+    const choose = () => {
+      if (urls.length) randomLink.href = urls[Math.floor(Math.random() * urls.length)]
+    }
+    choose()
+    randomLink.addEventListener('click', choose)
+  }
+  const copyButton = document.querySelector<HTMLButtonElement>('[data-copy-friend-info]')
+  const status = document.querySelector<HTMLElement>('.friend-copy-status')
+  copyButton?.addEventListener('click', async () => {
+    if (!status) return
+    try {
+      await navigator.clipboard.writeText(copyButton.dataset.copyText ?? '')
+      status.textContent = copyButton.dataset.copied ?? ''
+    } catch {
+      status.textContent = copyButton.dataset.failed ?? ''
+    }
+  })
+</script>
+
+<style>
+  .friends-page {
+    padding-top: 2.3rem;
+  }
+  .friends-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 1.5rem;
+    padding-bottom: 1.8rem;
+  }
+  .friends-heading h1 {
+    font: 500 clamp(1.8rem, 3vw, 2.3rem) / 1.4 var(--font-serif);
+    letter-spacing: -0.03em;
+  }
+  .friends-heading p {
+    margin-top: 0.55rem;
+    color: hsl(var(--muted-foreground));
+    font-size: 0.85rem;
+    line-height: 1.8;
+  }
+  .friends-heading > span {
+    padding-bottom: 0.2rem;
+    color: hsl(var(--muted-foreground));
+    font: 0.6rem var(--font-mono);
+    white-space: nowrap;
+  }
+  .friend-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-block: 1px solid hsl(var(--border));
+  }
+  .friend-grid li {
+    min-width: 0;
+  }
+  .friend-grid li + li {
+    border-left: 1px solid hsl(var(--border));
+  }
+  .friend-link {
+    display: flex;
+    flex-direction: column;
+    gap: 1.3rem;
+    height: 100%;
+    min-height: 14rem;
+    padding: 1.8rem 1.4rem;
+    transition: background 0.2s ease;
+  }
+  .friend-link:hover {
+    background: hsl(var(--muted) / 0.45);
+  }
+  .friend-identity {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+  }
+  .friend-identity > div {
+    min-width: 0;
+  }
+  .friend-identity p {
+    color: hsl(var(--muted-foreground));
+    font-size: 0.65rem;
+    line-height: 1.7;
+  }
+  .friend-identity h2 {
+    margin-top: 0.2rem;
+    font: 500 1.15rem/1.5 var(--font-serif);
+    overflow-wrap: anywhere;
+  }
+  .friend-avatar {
+    position: relative;
+    display: grid;
+    place-items: center;
+    flex: 0 0 3.25rem;
+    width: 3.25rem;
+    height: 3.25rem;
+    border-radius: 50%;
+    overflow: hidden;
+    background: hsl(var(--muted));
+    color: hsl(var(--primary));
+    font: 1.25rem var(--font-literary);
+  }
+  .friend-avatar img {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .friend-avatar img[hidden] {
+    display: none;
+  }
+  .friend-avatar.has-avatar > span {
+    opacity: 0;
+  }
+  .friend-description {
+    color: hsl(var(--muted-foreground));
+    font-size: 0.78rem;
+    line-height: 1.9;
+  }
+  .friend-address {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-top: auto;
+    color: hsl(var(--muted-foreground));
+    font: 0.62rem/1.8 var(--font-mono);
+  }
+  .friend-address > span:first-child {
+    overflow-wrap: anywhere;
+  }
+  .friends-afterword {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 1rem;
+  }
+  .friends-afterword a {
+    font-size: 0.72rem;
+  }
+  .friend-exchange {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+    gap: 4rem;
+    padding-top: 2rem;
+    margin-top: 2.5rem;
+    border-top: 1px solid hsl(var(--border));
+  }
+  .friend-exchange__intro h2 {
+    font: 500 1.3rem/1.6 var(--font-serif);
+  }
+  .friend-exchange__intro p {
+    max-width: 20rem;
+    margin-top: 0.8rem;
+    font-size: 0.82rem;
+    line-height: 1.9;
+    color: hsl(var(--muted-foreground));
+  }
+  .friend-exchange__intro > a {
+    margin-top: 1.4rem;
+    font-size: 0.78rem;
+  }
+  .friend-site {
+    min-width: 0;
+  }
+  .friend-site__heading {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .friend-site__heading img {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+  }
+  .friend-site__heading h3 {
+    font: 400 1.65rem/1.3 var(--font-literary);
+    letter-spacing: -0.03em;
+  }
+  .friend-site__heading p {
+    margin-top: 0.25rem;
+    color: hsl(var(--muted-foreground));
+    font-size: 0.73rem;
+    line-height: 1.8;
+  }
+  .friend-site dl {
+    margin-top: 1.25rem;
+    font-size: 0.73rem;
+    line-height: 1.9;
+  }
+  .friend-site dl > div {
+    display: grid;
+    grid-template-columns: 3rem minmax(0, 1fr);
+    gap: 1rem;
+    padding-block: 0.4rem;
+  }
+  .friend-site dt {
+    color: hsl(var(--muted-foreground));
+  }
+  .friend-site dd {
+    min-width: 0;
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+  .friend-copy {
+    display: inline-flex;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 0.65rem 0;
+    margin-top: 0.5rem;
+    border: 0;
+    border-bottom: 1px solid hsl(var(--border));
+    background: transparent;
+    color: hsl(var(--foreground));
+    font: 0.75rem var(--font-sans);
+    cursor: pointer;
+  }
+  .friend-copy > span {
+    color: hsl(var(--muted-foreground));
+  }
+  .friend-copy-status {
+    min-height: 1.5rem;
+    margin-top: 0.4rem;
+    color: hsl(var(--muted-foreground));
+    font-size: 0.7rem;
+    line-height: 1.8;
+  }
+  @media (max-width: 760px) {
+    .friend-grid {
+      grid-template-columns: 1fr;
+    }
+    .friend-grid li + li {
+      border-left: 0;
+      border-top: 1px solid hsl(var(--border));
+    }
+    .friend-link {
+      min-height: 0;
+      padding: 1.35rem 0.5rem;
+      gap: 0.7rem;
+    }
+    .friend-address {
+      padding-left: 4.1rem;
+    }
+    .friend-description {
+      padding-left: 4.1rem;
+    }
+    .friend-exchange {
+      grid-template-columns: 1fr;
+      gap: 1.8rem;
+      margin-top: 1.8rem;
+    }
+    .friends-heading > span {
+      display: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .friend-link {
+      transition: none;
+    }
+  }
+</style>

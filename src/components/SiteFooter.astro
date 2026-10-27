@@ -10,6 +10,7 @@ const lang = getLangFromUrl(Astro.url)
     <span>© {new Date().getFullYear()} heresAgu</span>
   </div>
   <nav aria-label={lang === 'en' ? 'Footer links' : '页脚链接'}>
+    <a href={localizedPath('/links', lang)}>{lang === 'en' ? 'Friends' : '友链'}</a>
     <a href='https://github.com/heresAgu' target='_blank' rel='noopener noreferrer'>GitHub ↗</a>
     <a href={localizedPath('/contact', lang)}>{lang === 'en' ? 'Contact' : '联系'}</a>
     <a href={localizedPath('/rss.xml', lang)}>RSS</a>
