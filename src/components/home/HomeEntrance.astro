@@ -75,6 +75,10 @@ const { lang = 'zh' } = Astro.props as { lang?: 'zh' | 'en' }
 </script>
 
 <style is:global>
+  /* The intro returns focus to this region; individual controls keep their focus rings. */
+  .editorial-home[tabindex='-1']:focus {
+    outline: none;
+  }
   html.agu-home-entrance {
     overflow: hidden;
     scrollbar-gutter: stable;

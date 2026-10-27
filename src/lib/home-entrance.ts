@@ -25,6 +25,7 @@ export async function initHomeEntrance() {
 
   const finish = (restoreFocus = true) => {
     if (finished) return
+    const shouldRestoreFocus = restoreFocus && document.activeElement === skip
     finished = true
     window.clearTimeout(entranceWindow.__aguHomeIntroTimer)
     html.classList.remove('agu-home-entrance')
@@ -45,8 +46,9 @@ export async function initHomeEntrance() {
         // Storage is optional; the page is always released.
       }
     }
-    if (restoreFocus && document.activeElement === skip && main) {
+    if (shouldRestoreFocus && main) {
       main.setAttribute('tabindex', '-1')
+      main.addEventListener('blur', () => main.removeAttribute('tabindex'), { once: true })
       main.focus({ preventScroll: true })
     }
   }
